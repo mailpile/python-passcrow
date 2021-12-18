@@ -6,7 +6,8 @@ Passcrow is an attempt to bring "password reset" functionality to
 applications using strong encryption, without sacrificing security.
 
 Potential applications include password managers, general purpose
-encryption tools (including OpenPGP) and cryptocurrency wallets.
+encryption tools (including OpenPGP and hard drive encryption) and
+cryptocurrency wallets.
 
 Passcrow is a spin-off from Mailpile (<https://www.mailpile.is/>), the
 secure e-mail client. Passcrow is inspired by Mailpile's experience
@@ -117,8 +118,15 @@ Preparation:
 
 4. Each of the other fragments is put in escrow with a Passcrow Helper,
    along with instructions on how to verify the identity of the owner.
-   Escrow Requests are themselves encrypted to safeguard the identity
-   of the user until they initiate a recovery.
+   Escrow Requests themselves are partially encrypted to safeguard the
+   identity of the user.
+
+5. (**Optional:** In the case of Ephemeral Recovery, a random Recovery Key
+   is generated and that used to derive encryption keys and IDs which are
+   in turn used to encrypt and places the Recovery Package itself in escrow
+   on a passcrow server. The user then only needs the Recovery Key and
+   server name to initiate recovery, information which can be written down
+   and kept safe "by hand.")
 
 Recovery:
 
@@ -137,17 +145,21 @@ Recovery:
 4. This allows the application to decrypt the "Recovery Package" and grant
    access to the locally encrypted data.
 
+5. (**Optional:** For Ephemeral Recovery, this process runs twice, first
+   to recover the "Recovery Package" and then again to recover the secrets.)
+
 
 This process provides the following guarantees:
 
-1. The user's encryption keys and data never leaves their device.
+1. The user's encryption keys and data never leaves their device (except
+   for the Ephemeral case).
 
 2. Users of the system remain anonymous and the third party Passcrow
    Helpers have no access to user data, until recovery is initiated.
 
 3. The application (or user) can adjust and balance reliability against
    security, by relying on multiple Passcrow Helpers and tuning "N-of-M"
-   parameterss when generating key fragments and choosing identity
+   parameters when generating key fragments and choosing identity
    verification strategies.
 
 
@@ -159,6 +171,9 @@ Helpers are well implemented and not malicious:
 2. Clear-text user data and recovery key fragments are only kept in RAM,
    and only for a limited time.
 
+3. Communications between the application and Passcrow Helpers can be
+   anonymous and strongly encrypted, e.g. over Tor.
+
 
 ## Protocol
 
@@ -166,8 +181,9 @@ The protocol defines the following methods. All parameters and responses
 are encapsulated in JSON objects as described below.
 
 Check the server's policy regarding token generation and supported
-features. Note this method may also return a valid access token if the
-user is authenticated using HTTP Auth or cookies.
+features, expiration times, etc. Note this method may also return a
+valid access token if the user is authenticated using HTTP Auth or
+cookies.
 
     GET /passcrow/policy
         <- (<POLICY OBJECT>)
@@ -197,15 +213,10 @@ To delete a secret from escrow:
         <- (<DELETION RESPONSE>)
 
 
-### Data structures
+## Data structures
 
-All data structures are JSON objects, with the additional constraint
-that there are hard upper bounds on the allowed size of each message.
-
-These upper bounds are to conserve resources on the server side; the
-server is blindly storing encrypted objects which it cannot validate
-until the client provides a recovery key.
-
+**NOTE:** This section is unfinished and under development. See
+[`passcrow.proto`](../passcrow/proto.py) for current definitions.
 
 
 ### Escrow Request
@@ -226,31 +237,6 @@ the client and server are compatible and that the server will be capable
 of decrypting the escrow data when (if) it becomes necessary.
 
 See below for details on the encryption scheme.
-
-
-### Parameters Object
-
-    {
-        "expiration": <UNIX TIMESTAMP>,
-        "warnings_to": "mailto:bre@example.org",   (optional)
-        "methods": [
-            "email", "sms", "signal", ...
-        ],
-        "payment" : [
-            <TOKEN-1>, <TOKEN-2>, ... <TOKEN-N>
-        ]
-    }
-
-The parameters object informs the server how long the escrowed data
-should ideally be stored for, and which authentication methods will be
-requested.
-
-It also provides a list of tokens as "payment" for the requested
-service. Payment is discussed in more detail below.
-
-If provided, the "warnings_to" contact details will be used to notify
-the user of operational issues which may prevent recovery. This includes
-notifications about user initiated deletion of escrowed data.
 
 
 ### Escrow Data Object
@@ -294,20 +280,7 @@ recovery is requested.
 
 ### 
 
+## FAQ
 
-## Open Questions
-
-### Expiration?
-
-Does the server need to be able to expire data? Ideally, yes, although
-this does conflict with some recovery scenarios.
-
-We don't want a situation where a malicious actor fills up the
-provider's hard drive and there is no safe way to tidy up. But we also
-need to be able to put e.g. a hard drive encryption key's recovery in
-escrow for a decade, in one step.
-
-Is "paying" for storage using hashcash a sufficient deterrent?
-
-
+### ...
 

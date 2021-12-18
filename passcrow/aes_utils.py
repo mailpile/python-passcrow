@@ -1,151 +1,83 @@
-# This is a compatibility wrapper for using whatever AES library is handy.
-# By default we support Cryptography and pyCrypto, with a preference for
-# Cryptography.
-
-# IMPORTANT:
-#
-# We currently only implement AES CTR mode, since this code is primarily
-# being used to write data to disk for long-term storage; the malleability
-# of CTR is considered a feature; if a bit gets flipped that doesn't destroy
-# all of the following blocks.
-#
-# This does mean we need to take special care with our IVs/nonces!
-#
 import os
 import struct
-from hashlib import md5
+import time
+
+import cryptography.hazmat.backends
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 
-# This MD5 digest saves the caller from having to know our internal
-# size requirements; AES wants 128, we just mix all the bits we're
-# given. We expect the input to already be strongly random (so MD5's
-# weaknesses shouldn't matter), but it may of the wrong size.
-def make_aes_key(*key):
-    return md5(b'-'.join(key)).digest()
+DEFAULT_ASSOC_DATA = b'Passcrow Encrypted Data'
 
 
-def make_cryptography_utils():
-    import os
-    import cryptography.hazmat.backends
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-    def _aes_ctr(key, nonce):
-        # Notes:
-        #
-        # The funky business with the prefixed nonce is because the first
-        # iteration of this code used pycrypto's Crypto.Util.Counter with
-        # the prefix argument. Cryptography doesn't have such a counter API,
-        # but if we carefully set the nonce we can achieve compatibility.
-        #
-        prefixed_nonce = md5(nonce).digest()[:8] + b'\0\0\0\0\0\0\0\1'
-        return Cipher(
-            algorithms.AES(key),
-            modes.CTR(prefixed_nonce),
-            backend=cryptography.hazmat.backends.default_backend())
-
-    def aes_ctr_encryptor(key, nonce):
-        return _aes_ctr(key, nonce).encryptor().update
-
-    def aes_ctr_decryptor(key, nonce):
-        return _aes_ctr(key, nonce).decryptor().update
-
-    return aes_ctr_encryptor, aes_ctr_decryptor
+def random_bytes(_bytes=16):
+    return os.urandom(_bytes)
 
 
-def make_pycrypto_utils():
-    from Crypto.Cipher import AES
-    from Crypto.Util import Counter
-
-    def _nonce_as_int(nonce):
-        i1, i2, i3, i4 = struct.unpack(">IIII", nonce)
-        return (i1 << 96 | i2 << 64 | i3 << 32 | i4)
-
-    def _aes_ctr(key, nonce):
-        # Notes:
-        #
-        # A previous iteration of this code used the Counter with a prefix,
-        # which limited us to 2**64 iterations. This has been change to just
-        # set an initial value and allow wraparound.
-        #
-        prefixed_nonce = md5(nonce).digest()[:8] + b'\0\0\0\0\0\0\0\1'
-        counter = Counter.new(128, initial_value=_nonce_as_int(prefixed_nonce))
-        return AES.new(key, mode=AES.MODE_CTR, counter=counter)
-
-    def aes_ctr_encryptor(key, nonce):
-        return _aes_ctr(key, nonce).encrypt
-
-    def aes_ctr_decryptor(key, nonce):
-        return _aes_ctr(key, nonce).decrypt
-
-    return aes_ctr_encryptor, aes_ctr_decryptor
+# Note: The default n_factor=20 is quite high, and will take some time.
+def derive_aesgcm_key(*key, salt=b'', n_factor=20, length=256):
+    assert(length in (128, 192, 256))
+    kdf = Scrypt(
+        salt=salt,
+        length=(length//8),
+        n=2**n_factor,
+        r=8,
+        p=1,
+        backend=cryptography.hazmat.backends.default_backend())
+    return kdf.derive(b''.join(key))
 
 
-def make_dummy_utils():
-    def aes_ctr_encryptor(key):
-        return lambda d: d
-
-    def aes_ctr_decryptor(key):
-        return lambda d: d
-
-    return aes_ctr_encryptor, aes_ctr_decryptor
-
-
-##############################################################################
-
-try:
-    aes_ctr_encryptor, aes_ctr_decryptor = make_cryptography_utils()
-except ImportError:
-    try:
-        aes_ctr_encryptor, aes_ctr_decryptor = make_pycrypto_utils()
-    except ImportError:
-        raise ImportError("Please pip install cryptography (or pycrypto)")
+def random_aesgcm_key(length=256, insecure=False):
+    # Stretching with the time and PID are a weak defense, in case the OS
+    # is giving us very lame random data. We use a lower n_factor to save
+    # cycles. The "insecure" mode is for generating keys which are only used
+    # for testing or validation.
+    return derive_aesgcm_key(
+        random_bytes(length // 4),
+        bytes(str(os.getpid()), 'latin-1'),
+        bytes(str(time.time()), 'latin-1'),
+        n_factor=(4 if insecure else 14),
+        length=length)
 
 
-def getrandbits(count):
-    bits = os.urandom(count // 8)
-    rint = 0
-    while bits:
-        rint = (rint << 8) | struct.unpack("B", bits[0])[0]
-        bits = bits[1:]
-    return rint
+def aesgcm_key_to_int(bin_key):
+    int_key = 0
+    for b in bin_key:
+        int_key *= 256
+        int_key += b
+    return int_key
 
-def aes_ctr_encrypt(key, iv, data):
-    return aes_ctr_encryptor(key, iv)(data)
+def aesgcm_key_from_int(int_key):
+    bin_key = bytearray()
+    while int_key:
+        bin_key.append(int_key % 256)
+        int_key //= 256
+    return bytes(reversed(bin_key))
 
-def aes_ctr_decrypt(key, iv, data):
-    return aes_ctr_decryptor(key, iv)(data)
+
+def aesgcm_encrypt(key, nonce, data, aad=DEFAULT_ASSOC_DATA):
+    return AESGCM(key).encrypt(nonce, data, aad)
+
+
+def aesgcm_decrypt(key, nonce, data, aad=DEFAULT_ASSOC_DATA):
+    return AESGCM(key).decrypt(nonce, data, aad)
 
 
 if __name__ == "__main__":
     import base64
 
-    bogus_key = make_aes_key(b"01234567890abcdef")
+    bogus_key = derive_aesgcm_key(b"01234567890abcdef", n_factor=10)
     bogus_nonce = b"this is a bogus nonce that is bogus"
     hello = b"hello world"
 
     results = []
-    for name, backend in (('Cryptography', make_cryptography_utils),
-                          ('pyCrypto', make_pycrypto_utils)):
-        aes_ctr_encryptor, aes_ctr_decryptor = backend()
 
-        ct1 = aes_ctr_encryptor(bogus_key, bogus_nonce)(hello)
-        results.append((name, base64.b64encode(ct1)))
+    ct1 = aesgcm_encrypt(bogus_key, bogus_nonce, hello)
 
-        ct2 = aes_ctr_encrypt(bogus_key, bogus_nonce, hello)
-        results.append((name, base64.b64encode(ct2)))
+    assert(bogus_key == aesgcm_key_from_int(aesgcm_key_to_int(bogus_key)))
 
-        assert(aes_ctr_decrypt(bogus_key, bogus_nonce, ct1) ==
-               aes_ctr_decryptor(bogus_key, bogus_nonce)(ct1) ==
-               hello)
-
-
-    # Make sure all the results are the same
-    okay = True
-    r1 = results[0]
-    for result in results[1:]:
-        if r1[1] != result[1]:
-            print('%s != %s' % (r1, result))
-            okay = False
-    assert(okay)
+    assert(ct1 != hello)  # lol
+    assert(len(random_aesgcm_key(insecure=True)) == len(bogus_key))
+    assert(aesgcm_decrypt(bogus_key, bogus_nonce, ct1) == hello)
 
     print("ok")
