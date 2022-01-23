@@ -1,8 +1,7 @@
 # Python Passcrow
 
-Passcrow is a system for implementing a secure "password escrow", a tool
-which makes it possible to recover from forgetting or losing a password
-or passphrase.
+Passcrow is a system for implementing secure "password escrow", making it
+possible to recover from forgetting or losing a key, password or passphrase.
 
 The user experience should be similar to the "reset password" recovery
 flow of popular online services, but adapted to the needs of Open Source,
@@ -142,3 +141,20 @@ TODO:
    * Start on boot using sysvinit or systemd modules?
    * Dockerize?
 
+
+## Copyright and License
+
+Copyright (C) 2022, Mailpile ehf. and Bjarni R. Einarsson.
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
