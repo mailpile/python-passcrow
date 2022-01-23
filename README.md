@@ -1,5 +1,7 @@
 # Python Passcrow
 
+**WARNING:** This is very new, proof-of-concept code. Anything might change!
+
 Passcrow is a system for community-assisted secure “password escrow”,
 making it possible to recover from forgetting or losing a key, password or
 passphrase.
