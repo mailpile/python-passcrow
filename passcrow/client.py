@@ -774,8 +774,16 @@ class PasscrowClient:
             fd.write("""\
 ## Examples ##                 (Remove the leading # to activate an exmaple)
 #
+# This determines how many identities must be verified for recovery to
+# succeed. If the ratio does not exactly match how many identities are
+# available, the client will do its best to approximate.
+#
 #ratio: 2/3
 #
+# See `passcrow help protect` for a description of verifications policies;
+# identities and servers.
+#
+#id: user@example.org
 #id: user@example.org, notify=bre@example.org
 #id: user@example.org via passcrow.example.org
 #id: +9995885522 via sms.passcrow.example.org

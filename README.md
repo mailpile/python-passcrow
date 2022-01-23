@@ -21,11 +21,30 @@ This package includes the following things:
 [Look here to understand how it works and why.](docs/README.md)
 
 
+## Getting Started - As a Passcrow Developer
+
+    ## Install requirements (use one of the following)
+    $ apt install python3-cryptography python3-appdirs
+    $ dnf install python3-cryptography python3-appdirs
+    $ pip3 install cryptography appdirs
+
+    # Get the code
+    $ git pull https://github.com/mailpile/python-passcrow
+    $ cd python-passcrow
+
+    # Test if it runs
+    $ python3 -m passcrow help
+
+TODO:
+
+   * Document some hacker hints
+
+
 ## Getting Started - As a User
 
     ## Install requirements (use one of the following)
     $ apt install python3-cryptography python3-appdirs
-    $ yum install python3-cryptography python3-appdirs
+    $ dnf install python3-cryptography python3-appdirs
     $ pip3 install cryptography appdirs
 
     $ pip3 install passcrow
@@ -36,7 +55,7 @@ Now, use a text editor to customize the configuration file as recommended
 by `passcrow init`. Once this is done, you can start putting secrets in
 escrow:
     
-    $ passcrow protect "My secrets" /path/to/secrets.txt
+    $ passcrow protect -n "My secrets" /path/to/secrets.txt
 
     $ passcrow list
 
@@ -56,7 +75,7 @@ To learn more about passcrow commands, options and arguments:
 
     ## Install requirements (use one of the following)
     $ apt install python3-cryptography python3-appdirs
-    $ yum install python3-cryptography python3-appdirs
+    $ dnf install python3-cryptography python3-appdirs
     $ pip3 install cryptography appdirs
 
     $ pip3 install passcrow
