@@ -10,7 +10,7 @@ encryption tools (including OpenPGP and hard drive encryption) and
 cryptocurrency wallets.
 
 Passcrow is a spin-off from Mailpile (<https://www.mailpile.is/>), the
-secure e-mail client. Passcrow is inspired by Mailpile's experience
+secure e-mail client. Passcrow is inspired by Mailpile's experience and
 will be used in future versions of the app.
 
 

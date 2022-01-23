@@ -532,4 +532,9 @@ CLI_COMMANDS.update({
     'help': cli_help})
 
 
-sys.exit(0 if cli_main(sys.argv[1:]) else 1)
+def main():
+    sys.exit(0 if cli_main(sys.argv[1:]) else 1)
+
+
+if __name__ == '__main__':
+    main()

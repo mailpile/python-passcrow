@@ -9,10 +9,14 @@
 #
 import setuptools
 from distutils.core import setup
+
+VERSION = '0.0.2'
+
 setup(
   name = 'passcrow',
-  packages = ['passcrow'],
-  version = '0.0.1',
+  packages = ['passcrow', 'passcrow.handlers', 'passcrow.integration'],
+  entry_points = {'console_scripts': ['passcrow=passcrow.__main__:main']},
+  version = VERSION,
   license='LGPL-3.0',
   description = "passcrow",
   long_description = """\
@@ -26,7 +30,7 @@ decentralization and users keeping locally encrypted data.
   author = 'Bjarni R. Einarsson',
   author_email = 'bre@mailpile.is',
   url = 'https://github.com/mailpile/python-passcrow',
-  download_url = 'https://codeload.github.com/mailpile/python-passcrow/tar.gz/refs/tags/v0.0.1',
+  download_url = 'https://codeload.github.com/mailpile/python-passcrow/tar.gz/refs/tags/v'+VERSION,
   keywords = ['passcrow', 'encryption', 'password', 'passphrase', 'escrow'],
   install_requires=[],
   classifiers=[
