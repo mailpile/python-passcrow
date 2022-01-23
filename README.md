@@ -17,8 +17,13 @@ This package includes the following things:
    2. A Python library for integrating passcrow into other Python apps
    3. A passcrow server implementation
 
-**Note:** This is the document for people who want to use Passcrow.
-[Look here to understand how it works and why.](docs/README.md)
+
+## Other Resources
+
+You are reading the instructions for people who just want to use Passcrow.
+
+   * [Protocol documentation](docs/README.md)
+   * [Discourse forum](https://community.mailpile.is/c/development/passcrow)
 
 
 ## Getting Started - As a Passcrow Developer
