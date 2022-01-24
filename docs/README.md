@@ -37,8 +37,8 @@ full access to the user's data and can issue new credentials at any time
 
 This is not true of systems which correctly use strong encryption; the
 point of encryption is to mathematically deny access to unauthorized
-third parties. In most practice, most such systems hinge upon asking the
-user to "choose a good password" and then "keep it safe" - whatever that
+third parties. In practice, most such systems hinge upon asking the user
+to "choose a good password" and then "keep it safe" - whatever that
 means!
 
 This is a terrible user experience; most users lack the skills to both
@@ -111,42 +111,43 @@ Preparation:
    an encrypted file containing the application-specific data required to
    regain access if a password is forgotten or hardware token lost.
 
-2. The "recovery key", which was used to encrypted the recovery package is
-   split into multiple fragments, using a Secret Sharing algorithm.
+2. The "Recovery Key", which was used to encrypted the recovery package is
+   split into multiple Fragments, using a secret sharing algorithm.
 
-3. One fragment is stored (cleartext) along with the Recovery Package itself.
+3. Some Fragments may be stored (cleartext) along with the Recovery Package
+   itself, but not enough to recover the key on their own.
 
-4. Each of the other fragments is put in escrow with a Passcrow Helper,
+4. Each of the other fragments is put in escrow with a Passcrow Server,
    along with instructions on how to verify the identity of the owner.
    Escrow Requests themselves are partially encrypted to safeguard the
    identity of the user.
 
-5. (**Optional:** In the case of Ephemeral Recovery, a random Recovery Key
+5. **Optional:** In the case of Ephemeral Recovery, a random Ephemeral Key
    is generated and that used to derive encryption keys and IDs which are
-   in turn used to encrypt and places the Recovery Package itself in escrow
-   on a passcrow server. The user then only needs the Recovery Key and
+   in turn used to encrypt and place the Recovery Package itself in escrow
+   on a Passcrow Server. The user then only needs the Ephemeral Key and
    server name to initiate recovery, information which can be written down
-   and kept safe "by hand.")
+   and kept safe "by hand."
 
 Recovery:
 
 1. When recovery is initiated, the passcrow-enabled application instructs the
-   Passcrow Helper servers to decrypt the Escrow Requests and identify the
-   user.
+   Passcrow Servers to decrypt the Escrow Requests and identify the user.
 
-2. The Passcrow Helper notifies the user that recovery has been requested.
+2. **Optional:** The Passcrow Servers notify the user that recovery has been
+   requested.
 
 3. The identification process results in the user receiving one or more
-   "reset codes", which they input into the passcrow-enabled application.
-   Once the application has collected the required codes, it provides those
-   to the Passcrow Helpers and receives the recovery key fragement(s) in
-   return.
+   "Verification Codes", which they input into the passcrow-enabled
+   application.  Once the application has collected the required codes, it
+   provides those to the Passcrow Servers and receives the Recovery Key
+   Fragment(s) in return.
 
 4. This allows the application to decrypt the "Recovery Package" and grant
    access to the locally encrypted data.
 
-5. (**Optional:** For Ephemeral Recovery, this process runs twice, first
-   to recover the "Recovery Package" and then again to recover the secrets.)
+5. **Optional:** For Ephemeral Recovery, this process runs twice, first
+   to recover the "Recovery Package" and then again to recover the secrets.
 
 
 This process provides the following guarantees:
@@ -158,21 +159,21 @@ This process provides the following guarantees:
    Helpers have no access to user data, until recovery is initiated.
 
 3. The application (or user) can adjust and balance reliability against
-   security, by relying on multiple Passcrow Helpers and tuning "N-of-M"
+   security, by relying on multiple Passcrow Servers and tuning "N-of-M"
    parameters when generating key fragments and choosing identity
    verification strategies.
 
 
 The process also has the following characteristics, assuming the Passcrow
-Helpers are well implemented and not malicious:
+Servers are well implemented and not malicious:
 
 1. Recovery does not take place without informing the user.
 
-2. Clear-text user data and recovery key fragments are only kept in RAM,
+2. Clear-text user data and Recovery Key Fragments are only kept in RAM,
    and only for a limited time.
 
-3. Communications between the application and Passcrow Helpers can be
-   anonymous and strongly encrypted, e.g. over Tor.
+3. Communications between the application and Passcrow Servers can be
+   anonymous and strongly encrypted, e.g. over HTTPS and/or Tor.
 
 
 ## Protocol
