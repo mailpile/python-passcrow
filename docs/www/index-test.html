@@ -14,7 +14,7 @@
         pre {border: 1px dashed #777; padding: 5px; margin: 5px;}
         tt {text-decoration: underline;}
     </style>
-    <title>Passcrow Test Server</title>
+    <title>Passcrow Test Server: @SERVER_NAME@</title>
 </head><body>
     <h1>Passcrow Test Server</h1>
     <p>
@@ -25,11 +25,12 @@
         You can enable it in your passcrow <tt>policy.rc</tt> by adding
         the following line:
     </p>
-    <pre>server: mailto via passcrow-test.mailpile.is</pre>
+    <pre>server: @SERVER_KINDS@ via @SERVER_NAME@</pre>
     <p>
         Please be warned that the operators make no guarantees about
         <i>security</i> or <i>uptime</i>, and the server is configured
-        to <b>delete any data that is over 30 days old</b>, no matter what
-        expiration policy has been requested (or offered) by the software.
+        to <b>delete any data that is over @KEEP_DAYS@ days old</b>, no
+        matter what expiration policy has been requested (or offered) by
+        the software.
     </p>
 </body></html>
