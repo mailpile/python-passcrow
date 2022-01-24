@@ -1,4 +1,4 @@
-from upagekite import uPageKite
+from upagekite import uPageKite, LocalHTTPKite
 from upagekite.httpd import HTTPD, url
 from upagekite.proto import uPageKiteDefaults, Kite
 from upagekite.web import process_post
@@ -35,7 +35,15 @@ def run_server(server, kite_name, kite_secret):
     uPK = pcPageKiteSettings 
     env = {}
     httpd = HTTPD(kite_name, '/unused', env, uPK)
-    kite = Kite(kite_name, kite_secret, handler=httpd.handle_http_request)
+    socks = []
+    if ':' in kite_name:
+        port, kite_name = kite_name.split(':', 1)
+        kite = LocalHTTPKite(
+            int(port), kite_name, kite_secret,
+            handler=httpd.handle_http_request)
+        socks.append(kite)
+    else:
+        kite = Kite(kite_name, kite_secret, handler=httpd.handle_http_request)
 
     # Programmatically configure our handlers instead of using decorators,
     # so the max_request_bytes matches our server configuration.
@@ -43,18 +51,24 @@ def run_server(server, kite_name, kite_secret):
         process_post(max_bytes=server.max_request_bytes)(
             passcrow_api))
 
-    uPageKite([kite], uPK=uPK).run()
+    uPageKite([kite], socks=socks, uPK=uPK).run()
 
 
 if __name__ == '__main__':
    import sys
    from ..server import PasscrowServer
 
-   kite_name = sys.argv[1]
-   kite_secret = sys.argv[2]
+   try:
+       kite_name = sys.argv[1]
+       kite_secret = sys.argv[2]
+   except IndexError:
+       sys.stderr.write(
+           'Usage: \tpython3 -m pagekite.integration.upagekite_app \\\n'
+           '\t\t<[port:]kite_name> <kite_secret> <path/to/config>\n')
+       sys.exit(1)
 
    pcs = PasscrowServer.FromConfig(sys.argv[3:])
    if not pcs:
-       sys.exit(1)
+       sys.exit(2)
 
    run_server(pcs, kite_name, kite_secret)
