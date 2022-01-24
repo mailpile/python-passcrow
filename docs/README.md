@@ -5,41 +5,48 @@
 Passcrow is an attempt to bring "password reset" functionality to
 applications using strong encryption, without sacrificing security.
 
+It does this by encrypting sensitive data locally, but placing fragments
+of a recovery key in escrow with servers who will only release the
+fragments if the user proves their identity somehow.
+
 Potential applications include password managers, general purpose
 encryption tools (including OpenPGP and hard drive encryption) and
-cryptocurrency wallets.
+cryptocurrency wallets. Passcrow may also be useful for recovering
+access to encrypted data, in the case where the owner has died or
+become otherwise incapacitated.
 
 Passcrow is a spin-off from Mailpile (<https://www.mailpile.is/>), the
 secure e-mail client. Passcrow is inspired by Mailpile's experience and
 will be used in future versions of the app.
 
 
-## What is Passcrow not?
+### What is Passcrow not?
+
+Passcrow is not a password manager.
 
 Passcrow is not a general purpose backup tool.
 
-Passcrow does not (yet!) describe how to recover access to encrypted
-data, in the case of user death or incapacitation.
+Passcrow is not a general purpose online data storage.
+
+Passcrow is not a cryptocurrency and does not use a blockchain.
 
 
+### Motivation
 
-## Motivation
+Most people have become accustomed to being able to easily recover from a
+forgotten or lost password.
 
-Most people have become accustomed to being able to easily recover from
-a forgotten or lost password.
-
-In "cloud" scenarios, this is usually done by using an out-of-band
-channel (e-mail or SMS are both common) to verify that the reset request
-is legitimate and then allow the user to choose a new password. This
-works, because their data is not encrypted - the service provider has
-full access to the user's data and can issue new credentials at any time
-(and to anyone: including law enforcement, insiders or hackers).
+In "cloud" scenarios, this is usually done by using an out-of-band channel
+(e-mail or SMS are both common) to verify that the reset request is
+legitimate and then allow the user to choose a new password. This works,
+because the user's data is not encrypted - the service provider has full
+access to the data and can issue new credentials at any time (and to
+anyone: including law enforcement, insiders or hackers).
 
 This is not true of systems which correctly use strong encryption; the
-point of encryption is to mathematically deny access to unauthorized
-third parties. In practice, most such systems hinge upon asking the user
-to "choose a good password" and then "keep it safe" - whatever that
-means!
+point of encryption is to mathematically deny access to unauthorized third
+parties. In practice, most such systems hinge upon asking the user to
+"choose a good password" and then "keep it safe" - whatever that means!
 
 This is a terrible user experience; most users lack the skills to both
 choose a strong password and keep it safe, this is a burden which harms
@@ -49,27 +56,28 @@ usability and mistakes are very common.
 modes, including loss, theft or malfunction.)
 
 It is also a factor that users are asked to make choices about passwords
-data security very early, in many cases before they have invested in use
-of the application and before they understand to what degree the data in
-the app is valuable or security sensitive. Nobody who lost their 2010
-Bitcoin wallet could know in advance it might be worth millions of
-dollars a decade later.
+and data security very early, in many cases before they have invested in
+use of the application and before they understand to what degree the data
+in the app is valuable or security sensitive. Nobody who lost their 2010
+Bitcoin wallet could know it might be worth millions of dollars a decade
+later.
 
 When it comes to encrypting user data (e-mail, hard drives, etc.), the
 ability to recover from a lost or forgotten password (or for example a
 malfunctioning hardware security token) is absolutely vital. Without it,
-encryption of user data poses an unacceptable risk of data loss to all
-but the most security sensitive users.
+encryption of user data poses an almost unacceptable risk of data loss to
+all but the most security sensitive users.
 
 To put it another way, for most users reliability is far more imporant
 than absolute privacy. Those of us who want to improve privacy, by
-advocating for more use of encryption, need to address legitimate
+advocating for more use of strong encryption, need to address legitimate
 concerns about reliability in the process.
 
-Passcrow is an attempt to solve these problems and "square the circle"
+Passcrow is an attempt to address these problems and "square the circle"
 of secure encryption, with the ability to recover from lost credentials.
 
 
+---------------------------------------------------------------------------
 
 ## User Experience
 
@@ -99,37 +107,40 @@ If the app developer chooses to keep things as simple as possible, they
 can choose to only prompt for a single recovery method (e-mail or SMS),
 or decide on the user's behalf which policy to use.
 
-This is deliberately very similar to the "password reset" flow provided
-by popular "software as a service" systems.
+This is deliberately very similar to the "password reset" flow provided by
+popular "software as a service" systems.
 
+
+---------------------------------------------------------------------------
 
 ## How Does It Work?
 
-Preparation:
+### Preparation
 
-1. A passcrow-enabled application creates a "Recovery Package", which is
+1. A passcrow-enabled application creates a "Recovery Pack", which is
    an encrypted file containing the application-specific data required to
-   regain access if a password is forgotten or hardware token lost.
+   regain access if a password is forgotten or a key lost.
 
-2. The "Recovery Key", which was used to encrypted the recovery package is
-   split into multiple Fragments, using a secret sharing algorithm.
+2. The "Recovery Key", a random key which was used to encrypt the Recovery
+   Pack, is split into multiple Fragments using Shamir's Secret Sharing
+   algorithm.
 
-3. Some Fragments may be stored (cleartext) along with the Recovery Package
-   itself, but not enough to recover the key on their own.
+3. Some Fragments may be stored (cleartext) along with the Recovery Pack
+   itself, but not enough to reconstruct the Recovery Key on their own.
 
-4. Each of the other fragments is put in escrow with a Passcrow Server,
+4. Each of the other Fragments is put in escrow with a Passcrow Server,
    along with instructions on how to verify the identity of the owner.
-   Escrow Requests themselves are partially encrypted to safeguard the
+   Escrow Requests are themselves partially encrypted to safeguard the
    identity of the user.
 
 5. **Optional:** In the case of Ephemeral Recovery, a random Ephemeral Key
    is generated and that used to derive encryption keys and IDs which are
-   in turn used to encrypt and place the Recovery Package itself in escrow
+   in turn used to encrypt and place the Recovery Pack itself in escrow
    on a Passcrow Server. The user then only needs the Ephemeral Key and
    server name to initiate recovery, information which can be written down
-   and kept safe "by hand."
+   or printed, and kept safe "by hand."
 
-Recovery:
+### Recovery
 
 1. When recovery is initiated, the passcrow-enabled application instructs the
    Passcrow Servers to decrypt the Escrow Requests and identify the user.
@@ -139,30 +150,30 @@ Recovery:
 
 3. The identification process results in the user receiving one or more
    "Verification Codes", which they input into the passcrow-enabled
-   application.  Once the application has collected the required codes, it
+   application. Once the application has collected sufficient codes, it
    provides those to the Passcrow Servers and receives the Recovery Key
    Fragment(s) in return.
 
-4. This allows the application to decrypt the "Recovery Package" and grant
-   access to the locally encrypted data.
+4. This allows the application to reconstruct the Recovery Key and decrypt
+   the Recovery Pack, thus granting access to locally encrypted data.
 
 5. **Optional:** For Ephemeral Recovery, this process runs twice, first
-   to recover the "Recovery Package" and then again to recover the secrets.
+   to recover the "Recovery Pack" and then again to recover the secrets.
 
+### Notes
 
 This process provides the following guarantees:
 
 1. The user's encryption keys and data never leaves their device (except
-   for the Ephemeral case).
+   for in the Ephemeral case).
 
-2. Users of the system remain anonymous and the third party Passcrow
-   Helpers have no access to user data, until recovery is initiated.
+2. Users of the system remain anonymous and the Passcrow Servers have no
+   access to user data (identities) until recovery is initiated.
 
 3. The application (or user) can adjust and balance reliability against
    security, by relying on multiple Passcrow Servers and tuning "N-of-M"
    parameters when generating key fragments and choosing identity
    verification strategies.
-
 
 The process also has the following characteristics, assuming the Passcrow
 Servers are well implemented and not malicious:
@@ -176,15 +187,17 @@ Servers are well implemented and not malicious:
    anonymous and strongly encrypted, e.g. over HTTPS and/or Tor.
 
 
+---------------------------------------------------------------------------
+
 ## Protocol
 
-The protocol defines the following methods. All parameters and responses
-are encapsulated in JSON objects as described below.
+Passcrow is an HTTP-based protocol which defines the following methods.
+All parameters and responses are encapsulated in JSON objects as described
+in the Data Structures chapter below.
 
 Check the server's policy regarding token generation and supported
-features, expiration times, etc. Note this method may also return a
-valid access token if the user is authenticated using HTTP Auth or
-cookies.
+features, expiration times, etc. Note this method may also return a valid
+access token if the user is authenticated using HTTP Auth or cookies.
 
     GET /passcrow/policy
         <- (<POLICY OBJECT>)
@@ -214,7 +227,7 @@ To delete a secret from escrow:
         <- (<DELETION RESPONSE>)
 
 
-## Data structures
+## Data Structures
 
 **NOTE:** This section is unfinished and under development. See
 [`passcrow.proto`](../passcrow/proto.py) for current definitions.
@@ -239,49 +252,6 @@ of decrypting the escrow data when (if) it becomes necessary.
 
 See below for details on the encryption scheme.
 
+...
 
-### Escrow Data Object
-
-    {
-        "secret": <STRING>,
-        "identities": {
-            "required": [
-                "mailto:bre@example.org"
-            ],
-            "any-N": [
-                "whatsapp:+3456900409"
-                "signal:+3456900409",
-                "sms:+3456900409",
-
-# FIXME: Support OAuth? OpenID? Login with Facebook? Human?
-
-            ],
-        },
-        "notify": [
-            "mailto:bre@example.org"
-        ]
-    }
-
-This allows the client to express which identities must be verified
-by the server before releasing the escrowed secret.
-
-The policy is such that verifiction requests are sent to all IDs, and
-in order to release the secret to the client, all required IDs must
-pass verification, and at least N (an integer) of the "any-N" IDs.
-
-In addition, a notification that recovery has been requested will be
-sent to any identities listed in the "notify" section.
-
-One of the "notify" or "identities" objects may be empty, but not both.
-
-Note that this object is never submitted in cleartext to the server,
-it is always encrypted using a key which is unknown to the server until
-recovery is requested.
-
-
-### 
-
-## FAQ
-
-### ...
 
