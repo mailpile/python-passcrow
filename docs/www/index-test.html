@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            margin:40px auto;
+            max-width:650px;
+            line-height:1.6;
+            font-size:18px;
+            color:#222;
+            padding:0 10px}
+        h1,h2,h3 {line-height:1.2}
+        pre {border: 1px dashed #777; padding: 5px; margin: 5px;}
+        tt {text-decoration: underline;}
+    </style>
+    <title>Passcrow Test Server</title>
+</head><body>
+    <h1>Passcrow Test Server</h1>
+    <p>
+        This is a public server for testing
+        <a href="https://github.com/mailpile/python-passcrow/">passcrow</a>.
+    </p>
+    <p>
+        You can enable it in your passcrow <tt>policy.rc</tt> by adding
+        the following line:
+    </p>
+    <pre>server: mailto via passcrow-test.mailpile.is</pre>
+    <p>
+        Please be warned that the operators make no guarantees about
+        <i>security</i> or <i>uptime</i>, and the server is configured
+        to <b>delete any data that is over 30 days old</b>, no matter what
+        expiration policy has been requested (or offered) by the software.
+    </p>
+</body></html>
