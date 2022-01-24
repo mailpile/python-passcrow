@@ -788,7 +788,12 @@ class PasscrowClient:
 #id: user@example.org via passcrow.example.org
 #id: +9995885522 via sms.passcrow.example.org
 #
-#server: mailto via passcrow.example.org
+# The only public server at the moment is `passcrow-test.mailpile.is`, which
+# is only intended for experimentation. It makes no guarantees about security
+# and deletes all data after 30 days, no matter what expiration has been
+# requested (or promised).
+#
+#server: mailto via passcrow-test.mailpile.is
 #server: sms, tel via sms.passcrow.example.org
 #
 #expiration_days: 365   # How long we request key fragments persist in escrow

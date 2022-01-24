@@ -125,6 +125,15 @@ def cli_init(args):
 
     # Create our passcrow object and directories
     pc = make_pc(args, create_dirs=True)
+
+    # Enable the test server by default
+    pc.default_policy.servers = ['mailto via passcrow-test.mailpile.is']
+    sys.stderr.write("""\
+NOTE: Configuring `passcrow-test.mailpile.is` as the default server for
+      e-mail (mailto) verification. Note that this server is for testing
+      only and deletes all data after 30 days, no matter what expiration
+      has been requested/promised.\n\n""")
+
     saved = pc.save_default_policy()
     sys.stderr.write(
         'Edit your default Passcrow policy here: %s\n' % cute_str(saved))
@@ -379,7 +388,7 @@ Verification initiated!
 When you have received the codes, please re-run `passcrow recover`
 with the codes as arguments. For example:
 
-passcrow recover "%s" %s
+    passcrow recover "%s" %s
 
 You must provide at least %d code(s) within %d minutes.""" % (
                     hint_list, url_list,
