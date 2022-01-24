@@ -208,10 +208,10 @@ def cli_protect(args):
     Options:
         -b            Batch mode, generates machine-readable output
         -n <NAME>     Description in passcrow database (required for stdin)
-        -q            Quick operation (reduced anonymity)
         -e            Ephemeral: local storage optional, small secrets only
         -E            Ephemeral only: skip local storage, small secrets only
     """
+    # FIXME: -q       Quick operation (reduced anonymity)
     # FIXME: -f = force, otherwise refuse to clobber existing secrets?
 
     args = arg_dict(args,
@@ -227,7 +227,7 @@ def cli_protect(args):
     if not ephemeral:
         ephemeral = args.get('-E', False) and EPHEMERAL_ONLY
 
-    quick = args.get('-q', False)
+    quick = args.get('-q', False) or True  # FIXME
     batch = args.get('-b', False)
     source = args['_'].pop(0)
     try:
@@ -305,7 +305,6 @@ def cli_recover(args):
     Options:
         -o <FILENAME> Write recovered data to file (default is stdout)
         -b            Batch mode, generates machine-readable output
-        -q            Quick operation (reduced anonymity)
 
     Batch mode will always output a JSON object describing the recovery
     progress. Recovered data, if present, is base64 encoded.
@@ -317,7 +316,7 @@ def cli_recover(args):
 
     # FIXME: -o does not work
 
-    quick = args.get('-q', False)
+    quick = args.get('-q', False) or True  # FIXME
     batch = args.get('-b', False)
     name = args['_'].pop(0)
     codes = args['_']
@@ -416,14 +415,13 @@ def cli_forget(args):
         passcrow forget "Secret 1" "Secret 2"
 
     Options:
-        -q            Quick operation (reduced anonymity)
         -l            Local only (do not contact remote servers)
     """
     args = arg_dict(args, options='C:D:H:Tlq', bare_args=True,
                           invalid_exc=UsageError)
 
     names = args['_']
-    quick = args.get('-q', False)
+    quick = args.get('-q', False) or True  # FIXME
     noremote = args.get('-l', False)
     pc = make_pc(args)
 
