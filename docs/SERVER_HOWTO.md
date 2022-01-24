@@ -1,0 +1,111 @@
+# Passcrow Server - Howto
+
+This document summarizes current "best practices" for setting up and running
+a Passcrow Server.
+
+The document is written with Debian derived Linux distributions in mind, but
+the steps and processes should translate easily to other Unix-like operating
+systems.
+
+
+## TODO
+
+   * Start on boot using sysvinit or systemd modules?
+   * Dockerize?
+
+
+## Installation
+
+See the [Getting Started - As a Server
+Admin](../README.md#getting-started---as-a-server-admin) section of the
+main project README.
+
+Once this is complete you should have:
+
+   1. Installed Passcrow and its dependencies
+   2. Created a user named `passcrow`
+   3. Created `/etc/passcrow/server_config.py` for settings
+   4. Created `/var/spool/passcrow` for data
+
+
+## Install and configure nginx
+
+Install nginx:
+
+    apt install nginx
+
+Create `/etc/nginx/sites-enabled/passcrow` with the following content:
+
+    # Passcrow server configuration
+    
+    # These are global rate limits for the Passcrow API.
+    #
+    # These should be set to conservative values; people spamming
+    # our servers with garbage is risk we cannot do much else about
+    # since all the content is anonymous and encrypted.
+    #
+    limit_req_zone $binary_remote_addr zone=passcrow:20m rate=1r/m;
+    
+    server {
+        listen 80;
+        listen [::]:80;
+        listen 443 ssl;
+        listen [::]:443 ssl;
+    
+        # Replace with your Passcrow Server DNS name
+        server_name passcrow.example.org;
+    
+        # Replace with proper certificates
+        ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+        ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+        ssl_protocols  TLSv1.2 TLSv1.3;
+        ssl_ciphers    HIGH:!aNULL:!MD5;
+    
+        # Put static content here, if you like.
+        root /var/spool/passcrow/html;
+        index index.html;
+    
+        location / {
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            try_files $uri $uri/ =404;
+        }
+    
+        # Proxy to gunicorn/passcrow. Make sure the ports match!
+        location /passcrow/ {
+            limit_req zone=passcrow burst=5 nodelay;
+            proxy_pass http://127.0.0.1:8000;
+        }
+    }
+
+Make sure nginx is running and configured to start on boot:
+
+    systemctl enable nginx
+    systemctl restart nginx
+
+
+## Configuring letsencrypt (certbot)
+
+TBD.
+
+
+## Configuring local e-mail
+
+TBD.
+
+
+## Configuring a remote mail server
+
+Edit `/etc/passcrow/server_config.py` so it includes the following lines,
+adjusted to match your setup:
+
+    mailto_handler = MailtoHandler(
+        smtp_server    = 'smtp.example.org:465',
+        smtp_login     = 'username',
+        smtp_password  = 'password',
+        mail_from      = 'Passcrow <passcrow@example.org>')
+
+    handlers = {
+        'mailto': mailto_handler}
+
+Remember to restart the passcrow gunicorn process after editing the settings.

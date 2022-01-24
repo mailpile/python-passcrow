@@ -109,20 +109,23 @@ TODO:
    * Create proper API docs for the passcrow client library
 
 
-## Getting Started - As a Provider
+## Getting Started - As a Server Admin
 
-Passcrow servers expose a very simple API over HTTP. They also send e-mail
+Passcrow Servers expose a very simple API over HTTP. They also send e-mail
 and may make use of 3rd party APIs such as Twilio.
 
 There are a few standard patterns for running such a server, one of which is
 described here below:
 
     ## Install requirements (use one of the following)
-    $ apt install python3-cryptography python3-appdirs python3-flask gunicorn
+    $ apt install python3-{pip,cryptography,appdirs,flask} gunicorn
+    $ dnf install python3-{pip,cryptography,appdirs,flask} gunicorn
+    $ pip3 install cryptography appdirs flask gunicorn
+
     $ pip3 install passcrow
 
     $ adduser passcrow
-    $ python3 -m passcrow server_init \
+    $ passcrow server_init \
         passcrow /etc/passcrow/server_config.py /var/spool/passcrow
 
 This will create an empty passcrow database in `/var/spool/passcrow` and a
@@ -139,10 +142,7 @@ and configure that to reverse-proxy the passcrow traffic to the gunicorn HTTP
 server. And of course `letsencrypt` to procure and renew TLS certificates, if
 you haven't already.
 
-TODO:
-
-   * Start on boot using sysvinit or systemd modules?
-   * Dockerize?
+For further details, consult [the Passcrow Server Howto](docs/SERVER_HOWTO.md).
 
 
 ## Copyright and License
