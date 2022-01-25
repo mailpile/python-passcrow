@@ -28,6 +28,20 @@ Definitions from [Google](https://www.google.com/search?q=define+escrow) and
 [Oxford Languages](https://languages.oup.com/google-dictionary-en/).
 
 
+## How does it work?
+
+The [PROTOCOL.md](Protocol descriptions) starts with an explanation of:
+
+   * What Passcrow does
+   * Why we care
+   * How Passcrow looks to the user
+   * What Passcrow does behind the scenes
+
+... and then delves into nitty gritty technicalities which you may not be
+interested in. But those first chapters explain pretty well how things
+work and why, so reading them isn't a bad idea!
+
+
 ## Where is the code?
 
 The Python implementation of Passcrow, and the primary source for this
@@ -117,7 +131,7 @@ This idea was discarded because it:
 3. Required knowing *today*, who your friends will be *in the future*.
    Relationships change over time, making this depressingly unrealistic.
 
-Introducing the Server role solved these issues, while also allowed most
+Introducing the Server role solved these issues, while also allowing most
 of the complicated technical details to be hidden from the user; in
 particular the too-long-to-type Recovery Key Fragments can be handled
 behind the scenes, and users only need to copy-paste or retype short-lived
