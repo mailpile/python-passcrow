@@ -34,6 +34,15 @@ The Python implementation of Passcrow, and the primary source for this
 documentation, both live here: <https://github.com/mailpile/python-passcrow/>
 
 
+## Where is the community?
+
+There is a forum for general discussions here:
+<https://community.mailpile.is/c/development/passcrow>
+
+Bug reports regarding the Python code or this documentation should go here:
+<https://github.com/mailpile/python-passcrow/issues>
+
+
 ## What is passcrow.org ?
 
 Passcrow.org publishes a directory of public Passcrow servers, both in
