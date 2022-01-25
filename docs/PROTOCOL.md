@@ -19,6 +19,8 @@ Passcrow is a spin-off from Mailpile (<https://www.mailpile.is/>), the
 secure e-mail client. Passcrow is inspired by Mailpile's experience and
 will be used in future versions of the app.
 
+See also: [The FAQ](FAQ.md), [Installation guides](../README.md)
+
 
 ### What is Passcrow not?
 

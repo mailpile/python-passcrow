@@ -11,7 +11,7 @@ flow of popular online services, but adapted to the needs of Open Source,
 decentralization and users keeping locally encrypted data.
 
 This is a stand-alone proof-of-concept Python implementation of Mailpile's
-[passcrow protocol](docs/README.md).
+[passcrow protocol](docs/PROTOCOL.md).
 
 This package includes the following things:
 
@@ -24,7 +24,8 @@ This package includes the following things:
 
 You are reading the instructions for people who just want to use Passcrow.
 
-   * [Protocol documentation](docs/README.md)
+   * [Frequently Asked Questions](docs/FAQ.md)
+   * [Protocol documentation](docs/PROTOCOL.md)
    * [Discourse forum](https://community.mailpile.is/c/development/passcrow)
 
 
