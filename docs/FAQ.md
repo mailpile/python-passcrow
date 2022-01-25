@@ -47,15 +47,15 @@ Bug reports regarding the Python code or this documentation should go here:
 
 **Note:** *this answer is aspirational, work is in progress*
 
-Passcrow.org publishes a directory of public Passcrow servers, both in
-human-readable and machine-readable form.
+[Passcrow.org](https://passcrow.org/) publishes a directory of public
+Passcrow servers, both in human-readable and machine-readable form.
 
 Passcrow.org will also take care of periodically testing the public servers
 to verify they are functioning correctly, and publishing the results of
 these tests so users can be informed if a server goes offline.
 
 
-## What happens if the Passcrow Server goes offline?
+## What happens if a Passcrow Server goes offline?
 
 When a Passcrow Server goes offline temporarily, it's no big deal.
 
@@ -70,13 +70,13 @@ detect this problem and respond (by generating new Recovery Packs and
 placing fragments in escrow with active servers).
 
 
-## What happens if the Passcrow Server misbehaves?
+## What happens if a Passcrow Server misbehaves?
 
-The Passcrow Server does not know who you are and cannot target you
+Passcrow Servers do not know who you are and cannot target you
 directly.
 
 However, if someone has stolen both your encrypted data and the Recovery
-Pack, they could coerce or hack the Passcrow Server so it reveals any
+Pack, they could coerce or hack a Passcrow Server so it reveals any
 Recovery Key Fragments it is in posession of (skipping the verification
 step), potentially gaining access to the stolen data that way.
 
@@ -106,14 +106,14 @@ reliability (by introducing new failure modes).
 
 Two examples:
 
-One: You define a recovery policy which requires three out of four close
-friends or family members cooperate to recover your personal data. The
-protected data in the Recovery Pack is the password you use to log in to
-your laptop.
+1. You define a recovery policy which requires three out of four close
+   friends or family members cooperate to complete recovery. The protected
+   data in the Recovery Pack is the password you use to log in to your
+   personal laptop.
 
-Two: You define a recovery policy which requires all 2/3 of your boss, the
-CTO and the CEO at your job to recover your work data. The protected data
-in the Recovery Pack is the passphrase used to encrypt your work laptop.
+2. You define a recovery policy which requires all 2/3 of your manager,
+   the CTO and the CEO at your job to complete recovery. The protected data
+   in the Recovery Pack is the passphrase used to encrypt your work laptop.
 
 In both cases, Ephemeral Passcrow allows you then print a label with a URL
 and a code that you can stick to your encrypted device. The URL will
@@ -124,6 +124,9 @@ to be correctly transcribed by a human.
 So if you die or are incapacitated (or fired!), the people managing your
 affairs can visit the URL and initiate recovery, gaining access to your
 otherwise secure devices.
+
+A third example would be putting such a label on an encrypted backup
+drive, so forgetting the passphrase doesn't prevent access years later.
 
 
 ## Why not always use Ephemeral Passcrow?
