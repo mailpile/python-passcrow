@@ -31,7 +31,7 @@ Definitions from [Google](https://www.google.com/search?q=define+escrow) and
 ## Where is the code?
 
 The Python implementation of Passcrow, and the primary source for this
-documentation, both live here: <https://github.com/mailpile/passcrow/>
+documentation, both live here: <https://github.com/mailpile/python-passcrow/>
 
 
 ## What is passcrow.org ?
@@ -118,6 +118,27 @@ affairs can visit the URL and initiate recovery.
 It is less reliable; if the server storing the Recovery Pack goes offline,
 recovery is impossible (this is the "new failure mode" introduced by not
 ensuring shared fate for the recovery pack and the data itself).
+
+
+## What Encryption does Passcrow use?
+
+**Note:** *This may change once we get feedback from qualified experts.*
+
+Keys are generated randomly using the operating system's `urandom()` or
+equivalent, stretched using Scrypt.
+
+Data is encrypted using AES-GCM-256.
+
+Recovery Keys are split into Fragments using Shamir's Secret Sharing.
+
+Ephemeral Recovery Packs are compressed before encryption.
+
+Ephemeral Recovery Keys and the IDs identifying the packs on the servers
+are derived from a single 96-bit key, using Scrypt and different salts.
+
+The implementations used are those provided by the Python cryptography
+project, and code copy-pasted from Wikipedia's page about Shamir's Secret
+Sharing. The latter most definitely needs a review.
 
 
 ## Who pays for all of this?
