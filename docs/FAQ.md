@@ -6,8 +6,8 @@ Passcrow is an attempt to bring "password reset" functionality to
 applications using strong encryption, without sacrificing security.
 
 It does this by encrypting sensitive data locally, but placing fragments
-of a recovery key in escrow with servers who will only release the
-fragments if the user proves their identity somehow.
+of a recovery key in escrow with community-run servers, which only release
+the fragments if the user proves their identity somehow.
 
 
 ## What is escrow?
@@ -44,6 +44,8 @@ Bug reports regarding the Python code or this documentation should go here:
 
 
 ## What is passcrow.org ?
+
+**Note:** *this answer is aspirational, work is in progress*
 
 Passcrow.org publishes a directory of public Passcrow servers, both in
 human-readable and machine-readable form.
@@ -106,20 +108,22 @@ Two examples:
 
 One: You define a recovery policy which requires three out of four close
 friends or family members cooperate to recover your personal data. The
-protected data is the password you use to log in to your laptop.
+protected data in the Recovery Pack is the password you use to log in to
+your laptop.
 
 Two: You define a recovery policy which requires all 2/3 of your boss, the
 CTO and the CEO at your job to recover your work data. The protected data
-is the passphrase used to encrypt your work laptop.
+in the Recovery Pack is the passphrase used to encrypt your work laptop.
 
-In both cses, Ephemeral Passcrow allows you then print a label with a
-URL and a code that you can stick to your encrypted device. The URL will
+In both cases, Ephemeral Passcrow allows you then print a label with a URL
+and a code that you can stick to your encrypted device. The URL will
 provide instructions on how to initiate recovery, the code is sufficient
 to start the recovery process. Both the URL and the code are short enough
 to be correctly transcribed by a human.
 
 So if you die or are incapacitated (or fired!), the people managing your
-affairs can visit the URL and initiate recovery.
+affairs can visit the URL and initiate recovery, gaining access to your
+otherwise secure devices.
 
 
 ## Why not always use Ephemeral Passcrow?

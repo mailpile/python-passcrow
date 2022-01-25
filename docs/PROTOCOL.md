@@ -6,8 +6,8 @@ Passcrow is an attempt to bring "password reset" functionality to
 applications using strong encryption, without sacrificing security.
 
 It does this by encrypting sensitive data locally, but placing fragments
-of a recovery key in escrow with servers who will only release the
-fragments if the user proves their identity somehow.
+of a recovery key in escrow with community-run servers, which only release
+the fragments if the user proves their identity somehow.
 
 Potential applications include password managers, general purpose
 encryption tools (including OpenPGP and hard drive encryption) and
