@@ -150,7 +150,10 @@ Recovery Keys are split into Fragments using Shamir's Secret Sharing.
 Ephemeral Recovery Packs are compressed before encryption.
 
 Ephemeral Recovery Keys and the IDs identifying the packs on the servers
-are derived from a single 96-bit key, using Scrypt and different salts.
+are derived from a single approximately 96-bit key, using Scrypt and
+different salts. The random distribution may be biased, due to code which
+avoids bit sequences which may "look the same" when base64-encoded, such
+as O and 0, or I and l. This needs a review.
 
 The implementations used are those provided by the Python cryptography
 project, and code copy-pasted from Wikipedia's page about Shamir's Secret
