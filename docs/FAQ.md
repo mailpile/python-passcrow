@@ -102,7 +102,38 @@ the user's data may increase security in some cases, but at the cost of
 reliability (by introducing new failure modes).
 
 
-## What is Ephemeral Passcrow for?
+## Why does Passcrow need Servers?
+
+A previous iteration of this concept was serverless: it was based on
+e-mailing (or printing and sneaker-netting) Recovery Key Fragments to
+friends and family, and asking them to keep them safe until it was time
+for recovery.
+
+This idea was discarded because it:
+
+1. Implied exposing the fragments as cleartext to e-mail server operators.
+2. Required relying on people who may not be skilled techies to keep
+   sensitive data safe and findable for a long period of time.
+3. Required knowing *today*, who your friends will be *in the future*.
+   Relationships change over time, making this depressingly unrealistic.
+
+Introducing the Server role solved these issues, while also allowed most
+of the complicated technical details to be hidden from the user; in
+particular the too-long-to-type Recovery Key Fragments can be handled
+behind the scenes, and users only need to copy-paste or retype short-lived
+verification codes.
+
+Adding a specialized server also allows us to keep the Recovery Key
+Fragments encrypted and unreadable until the user actually initiates
+recovery, which improves overall security significantly.
+
+
+## What is Ephemeral Passcrow?
+
+Ephemeral Passcrow is what you get when the Recovery Pack itself is very
+carefully placed in escrow, linked to random ID on a known server.
+
+Why would you do that? So glad you asked!
 
 Two examples:
 
@@ -131,9 +162,12 @@ drive, so forgetting the passphrase doesn't prevent access years later.
 
 ## Why not always use Ephemeral Passcrow?
 
-It is less reliable; if the server storing the Recovery Pack goes offline,
+It is less reliable: if the server storing the Recovery Pack goes offline,
 recovery is impossible (this is the "new failure mode" introduced by not
 ensuring shared fate for the recovery pack and the data itself).
+
+Recovery also requires two rounds of verification, instead of just one.
+So it's less user friendly, too.
 
 
 ## What Encryption does Passcrow use?
