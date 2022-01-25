@@ -120,12 +120,13 @@ popular "software as a service" systems.
 ### Preparation
 
 1. A passcrow-enabled application creates a "Recovery Pack", which is
-   an encrypted file containing the application-specific data required to
-   regain access if a password is forgotten or a key lost.
+   a (partially) encrypted file containing the application-specific data
+   required to regain access if a password is forgotten or a key lost,
+   along with settings, server names and IDs required to initiate recovery.
 
-2. The "Recovery Key", a random key which was used to encrypt the Recovery
-   Pack, is split into multiple Fragments using Shamir's Secret Sharing
-   algorithm.
+2. The "Recovery Key", a random key which was used to encrypt sensitive
+   parts of the Recovery Pack, is split into multiple Fragments using
+   Shamir's Secret Sharing algorithm.
 
 3. Some Fragments may be stored (cleartext) along with the Recovery Pack
    itself, but not enough to reconstruct the Recovery Key on their own.
@@ -134,13 +135,6 @@ popular "software as a service" systems.
    along with instructions on how to verify the identity of the owner.
    Escrow Requests are themselves partially encrypted to safeguard the
    identity of the user.
-
-5. **Optional:** In the case of Ephemeral Recovery, a random Ephemeral Key
-   is generated and that used to derive encryption keys and IDs which are
-   in turn used to encrypt and place the Recovery Pack itself in escrow
-   on a Passcrow Server. The user then only needs the Ephemeral Key and
-   server name to initiate recovery, information which can be written down
-   or printed, and kept safe "by hand."
 
 ### Recovery
 
@@ -158,9 +152,6 @@ popular "software as a service" systems.
 
 4. This allows the application to reconstruct the Recovery Key and decrypt
    the Recovery Pack, thus granting access to locally encrypted data.
-
-5. **Optional:** For Ephemeral Recovery, this process runs twice, first
-   to recover the "Recovery Pack" and then again to recover the secrets.
 
 ### Notes
 
@@ -187,6 +178,9 @@ Servers are well implemented and not malicious:
 
 3. Communications between the application and Passcrow Servers can be
    anonymous and strongly encrypted, e.g. over HTTPS and/or Tor.
+
+
+**TODO:** *Describe Ephemeral Passcrow. tl;dr: escrowing the Recovery Pack*
 
 
 ---------------------------------------------------------------------------
@@ -257,3 +251,4 @@ See below for details on the encryption scheme.
 ...
 
 
+**TODO:** *write more docs*
