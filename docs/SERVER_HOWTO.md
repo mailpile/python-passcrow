@@ -194,3 +194,35 @@ to the end of the user's `crontab`:
 If you would rather not publish the storage stats, redirect the output
 to `/dev/null` instead.  Note that <https://passcrow.org/> will expect the
 stats to be published for health monitoring/reporting.
+
+
+## Updating to the latest versions
+
+Updates are important for security. You should periodically update your
+system!
+
+To update passcrow's dependencies to the latest versions (we have taken
+care not do depend on anything unsupported by mainstream distros):
+
+    apt update
+    apt upgrade
+
+To update your server's python-passcrow to the latest version:
+
+    pip3 install passcrow==0.0.4
+
+Note: replace `0.0.4` with whatever is actually the
+[latest release on PyPI](https://pypi.org/project/passcrow/).
+
+Finally, be sure to restart the passcrow server after any updates.
+
+    service passcrow restart
+
+
+## Monitoring your Server
+
+There will be a public monitoring facility for public servers at
+<https://passcrow.org/>.
+
+It's not live yet, but when it is, the code it uses will be publicly
+available for people who want to DIY or run private servers.
