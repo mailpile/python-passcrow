@@ -41,6 +41,14 @@ class JsonError(_json_object):
     error = property(*_json_object_prop('error'))
 
 
+class ServerStats(_json_object):
+    _KEYS = {
+        'requests': dict,
+        'storage': dict}
+    requests = property(*_json_object_prop('requests'))
+    storage = property(*_json_object_prop('storage'))
+
+
 class PasscrowServer:
     STORAGE_TABLES = {
         'escrow': ['data'],
@@ -65,6 +73,7 @@ class PasscrowServer:
         self.expiration = expiration or DEFAULT_EXPIRATION
         self.vrfy_timeout = vrfy_timeout or DEFAULT_VRFY_TIMEOUT
         self.max_request_bytes = max_request_bytes or DEFAULT_MAX_REQ_BYTES
+        self.server_stats = ServerStats(requests={}, storage={})
 
         if not payments:
             payments = [PaymentFree(min(self.expiration, DEFAULT_FREE_TIME))]
@@ -79,40 +88,65 @@ class PasscrowServer:
         self.handlers = handlers or {'mailto': MailtoHandler()}
         self.warnings_to = warnings_to
         self.endpoints = {
+            'stats': self.generate_Stats,
             'policy': self.generate_Policy,
             'escrowrequest': self.process_EscrowRequest,
             'deletionrequest': self.process_DeletionRequest,
             'recoveryrequest': self.process_RecoveryRequest,
             'verificationrequest': self.process_VerificationRequest}
+        for ep in self.endpoints:
+            self.server_stats.requests[ep+'_ok'] = 0
+            self.server_stats.requests[ep+'_ok_usec'] = 0
+            self.server_stats.requests[ep+'_err'] = 0
 
         for table, columns in self.STORAGE_TABLES.items():
             self.storage.prepare_table(table, columns)
 
     def handle(self, user_info, rpc_method, rdata):
         try:
-            if isinstance(rdata, dict):
-                json_data = rdata
-            else:
-                if len(rdata) > self.max_request_bytes:
-                    return JsonError(error='Request too large')
-                json_data = json.loads(rdata or '{}')
-        except:
-            return JsonError(error='Bad request')
-        
-        rl_id = hashlib.md5(bytes(str(user_info), 'utf-8')).hexdigest()
-        try:
-            self.storage.fetch('rlimit', '0-%s' % rl_id)
-            return JsonError(error='Sorry, rate limited.')
-        except KeyError:
-            self.storage.insert('rlimit', b'ping',
-                row_id=rl_id,
-                expiration=int(time.time() + 1))
+            t0 = time.time()
+            try:
+                if isinstance(rdata, dict):
+                    json_data = rdata
+                else:
+                    if len(rdata) > self.max_request_bytes:
+                        return JsonError(error='Request too large')
+                    json_data = json.loads(rdata or '{}')
+            except:
+                raise Exception('Bad request')
 
-        try:
-            self.log('%s method=%s' % (user_info, rpc_method))
-            return self.endpoints[rpc_method](json_data)
-        except KeyError:
-            return JsonError(error=('Unsupported: %s' % rpc_method))
+            rl_id = hashlib.md5(bytes(str(user_info), 'utf-8')).hexdigest()
+            try:
+                self.storage.fetch('rlimit', '0-%s' % rl_id)
+                raise Exception('Sorry, rate limited.')
+            except KeyError:
+                self.storage.insert('rlimit', b'ping',
+                    row_id=rl_id,
+                    expiration=int(time.time() + 1))
+
+            try:
+                self.log('%s method=%s' % (user_info, rpc_method))
+                rv = self.endpoints[rpc_method](json_data)
+
+                # Calculate and update performance stats
+                self.server_stats.requests[rpc_method+'_ok'] += 1
+                rus = int(1000000 * (time.time() - t0))
+                wus = self.server_stats.requests[rpc_method+'_ok_usec']
+                wus = int((0.1 * rus) + (0.9 * wus)) if wus else rus
+                self.server_stats.requests[rpc_method+'_ok_usec'] = wus
+
+                return rv
+            except KeyError:
+                raise Exception(('Unsupported: %s' % rpc_method))
+        except Exception as e:
+            if rpc_method in self.endpoints:
+                ekey += rpc_method + '_err'
+                self.server_stats.requests[rpc_method] += 1
+            return JsonError(error=str(e))
+
+    def generate_Stats(self, request_dict):
+        self.server_stats.storage = self.storage.get_stats()
+        return self.server_stats
 
     def generate_Policy(self, request_dict):
         po = PolicyObject()
@@ -275,7 +309,7 @@ class PasscrowServer:
                 raise ValueError('Config file name should end in .py')
             if os.path.exists(config_file):
                 raise ValueError(
-                    'Cravenly refusing to overwrite existing config') 
+                    'Cravenly refusing to overwrite existing config')
 
         config_file = os.path.normpath(os.path.abspath(config_file))
         for dpath, mode in (
@@ -295,7 +329,7 @@ class PasscrowServer:
 ###############################################################################
 
 # This is where the default escrow database is stored.
-data_dir = %s 
+data_dir = %s
 
 
 # Server description.

@@ -47,6 +47,13 @@ class FileSystemStorage:
             raise KeyError('Not found: %s' % str(row_id, 'latin-1'))
         return row_id
 
+    def get_stats(self):
+        stats = os.statvfs(self.workdir)
+        free_pct = min(
+            int(100 * stats.f_bavail / stats.f_blocks),
+            int(100 * stats.f_favail / stats.f_files))
+        return {'free_pct': free_pct}
+
     def prepare_table(self, name, rows):
         name = _bytes(name, 'latin-1')
         tpath = os.path.join(self.workdir, name)
@@ -132,7 +139,7 @@ if __name__ == '__main__':
     id1 = fss.insert('testing', 'stuff', 'things', expiration=exp)
     assert([b'stuff', b'things'] == fss.fetch('testing', id1))
     try:
-        fss.fetch('testing', id1, now=exp+1) 
+        fss.fetch('testing', id1, now=exp+1)
         assert(not 'reached')
     except KeyError:
         pass

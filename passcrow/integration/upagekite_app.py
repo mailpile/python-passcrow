@@ -14,7 +14,8 @@ def user_info(req_env):
 
 def passcrow_api(req_env):
     rpc_method = req_env.request_path.rsplit('/', 1)[-1]
-    if rpc_method != 'policy' and req_env.http_method != 'POST':
+    if (rpc_method not in ('policy', 'stats')
+            and req_env.http_method != 'POST'):
         return {'code': 400, 'msg': 'Forbidden', 'body': 'Forbidden'}
 
     resp = PC_SERVER.handle(user_info(req_env), rpc_method, req_env.post_data)
