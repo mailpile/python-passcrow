@@ -8,12 +8,6 @@ the steps and processes should translate easily to other Unix-like operating
 systems.
 
 
-## TODO
-
-   * Start on boot using sysvinit or systemd modules?
-   * Dockerize?
-
-
 ## Installation
 
 See the [Getting Started - As a Server
