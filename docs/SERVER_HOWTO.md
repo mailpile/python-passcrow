@@ -30,7 +30,7 @@ Once this is complete you should have:
 
 ## Configure gunicorn+passcrow to start on boot
 
-Install nginx:
+Install gunicorn:
 
     apt install gunicorn
 
@@ -101,7 +101,6 @@ Create `/etc/nginx/sites-enabled/passcrow` with the following content:
             try_files $uri $uri/ =404;
         }
     
-        
         client_max_body_size 4096;  # Should match server_config.py
         keepalive_timeout 5;
 
@@ -148,11 +147,6 @@ Restart nginx to make sure everything is up to date:
     systemctl restart nginx
 
 
-## Configuring local e-mail
-
-FIXME
-
-
 ## Configuring a remote mail server
 
 Edit `/etc/passcrow/server_config.py` so it includes the following lines,
@@ -163,11 +157,29 @@ adjusted to match your setup:
         smtp_login     = 'username',
         smtp_password  = 'password',
         mail_from      = 'Passcrow <passcrow@example.org>')
-
+    
     handlers = {
         'mailto': mailto_handler}
 
 Remember to restart the passcrow gunicorn process after editing the settings.
+
+
+## Configuring local e-mail
+
+Configuring an entire local e-mail server is beyond the scope of this
+document, but doing so will improve performance somewhat compared to using
+SMTP as described above.
+
+If you have a local mail server up and running, you can configure the
+passcrow server to use it, by editing `/etc/passcrow/server_config.py` so
+it includes the following (edit to taste):
+
+    mailto_handler = MailtoHandler(
+        sendmail_binary = '/usr/sbin/sendmail',
+        mail_from       = 'Passcrow <passcrow@example.org>')
+    
+    handlers = {
+        'mailto': mailto_handler}
 
 
 ## Install Passcrow maintenance cron-job
@@ -186,4 +198,5 @@ to the end of the user's `crontab`:
         >/home/passcrow/www/storage-stats.json
 
 If you would rather not publish the storage stats, redirect the output
-to `/dev/null` instead.
+to `/dev/null` instead.  Note that <https://passcrow.org/> will expect the
+stats to be published for health monitoring/reporting.

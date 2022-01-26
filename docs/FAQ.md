@@ -15,7 +15,7 @@ the fragments if the user proves their identity somehow.
 noun:
 
    * A bond, deed, or other document kept in the custody of a third party
-     and taking effect only when a specified condition has been fulfilled. 
+     and taking effect only when a specified condition has been fulfilled.
    * The state of being kept in custody or trust until a specified condition
      has been fulfilled. "the board holds funds in escrow"
 
@@ -79,9 +79,9 @@ be permanently lost, as well as any Ephemeral Recovery Packs.
 For some policies (requiring N-of-M fragments) this may not pose an
 immediate problem, for others it means recovery becomes impossible.
 
-Periodically checking passcrow.org for server status could be used to
-detect this problem and respond (by generating new Recovery Packs and
-placing fragments in escrow with active servers).
+Periodically checking <https://passcrow.org/> for server status could be
+used to detect this problem and respond (by generating new Recovery Packs
+and placing fragments in escrow with active servers).
 
 
 ## What happens if a Passcrow Server misbehaves?
