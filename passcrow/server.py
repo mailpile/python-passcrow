@@ -8,6 +8,7 @@ import appdirs
 
 from .proto import *
 
+from . import VERSION
 from .handlers.email import MailtoHandler
 from .payments import PaymentFree, PaymentHashcash
 from .secret_share import random_int
@@ -43,8 +44,12 @@ class JsonError(_json_object):
 
 class ServerStats(_json_object):
     _KEYS = {
+        'version': str,
+        'start-ts': int,
         'requests': dict,
         'storage': dict}
+    version = property(*_json_object_prop('version'))
+    start_ts = property(*_json_object_prop('start-ts'))
     requests = property(*_json_object_prop('requests'))
     storage = property(*_json_object_prop('storage'))
 
@@ -73,7 +78,11 @@ class PasscrowServer:
         self.expiration = expiration or DEFAULT_EXPIRATION
         self.vrfy_timeout = vrfy_timeout or DEFAULT_VRFY_TIMEOUT
         self.max_request_bytes = max_request_bytes or DEFAULT_MAX_REQ_BYTES
-        self.server_stats = ServerStats(requests={}, storage={})
+        self.server_stats = ServerStats(
+            version='python-passcrow v%s' % VERSION,
+            start_ts=time.time(),
+            requests={},
+            storage={})
 
         if not payments:
             payments = [PaymentFree(min(self.expiration, DEFAULT_FREE_TIME))]
@@ -448,8 +457,14 @@ handlers = {
             **dict((k, config.get(k)) for k in SERVER_SETTINGS))
 
     def cli_cleanup(self):
+        import json
+        stats = {}
         for table in self.STORAGE_TABLES:
-            self.storage.expire_table(table)
+            (expired, live) = self.storage.expire_table(table)
+            stats[table] = {
+                'expired': (expired // len(self.STORAGE_TABLES[table])),
+                'live': (live // len(self.STORAGE_TABLES[table]))}
+        print(json.dumps(stats, indent=2))
         return True
 
 

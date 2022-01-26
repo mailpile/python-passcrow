@@ -11,10 +11,12 @@ def _bytes(data, cset):
 
 
 class FileSystemStorage:
+    TYPE = 'filesystem'
     ROW_FN_RE = re.compile(b'^[0-9a-f]+-[0-9a-f]+-[0-9a-f]+$')
 
     def __init__(self, workdir, create=False):
         self.workdir = workdir if isinstance(workdir, bytes) else bytes(workdir, 'latin-1')
+        self.is_encrypted = False  #FIXME
         if not os.path.exists(self.workdir):
             if create:
                 pmkdir(self.workdir, 0o700)
@@ -52,7 +54,10 @@ class FileSystemStorage:
         free_pct = min(
             int(100 * stats.f_bavail / stats.f_blocks),
             int(100 * stats.f_favail / stats.f_files))
-        return {'free_pct': free_pct}
+        return {
+            'type': self.TYPE,
+            'encrypted': self.is_encrypted,
+            'free_pct': free_pct}
 
     def prepare_table(self, name, rows):
         name = _bytes(name, 'latin-1')
@@ -63,9 +68,11 @@ class FileSystemStorage:
             pmkdir(os.path.join(tpath, b'%3.3x' % prefix), 0o700)
 
     def expire_table(self, table, now=None):
+        """Returns a tuple of (expired, unexpired) cells (not rows)."""
         table = _bytes(table, 'latin-1')
         tpath = os.path.join(self.workdir, table)
         now = now or time.time()
+        expired = unexpired = 0
         if not os.path.exists(tpath):
             raise KeyError('No such table: %s' % table)
         for prefix in range(0, 16**3):
@@ -75,6 +82,10 @@ class FileSystemStorage:
                     continue
                 if self._expired(fn, now):
                     os.remove(os.path.join(dpath, fn))
+                    expired += 1
+                else:
+                    unexpired += 1
+        return expired, unexpired
 
     def insert(self, table, *data, rand_max=None, row_id=None, expiration=0):
         table = _bytes(table, 'latin-1')

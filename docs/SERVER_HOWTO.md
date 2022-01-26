@@ -139,7 +139,12 @@ timely fashion:
     su - passcrow
     crontab -e
 
-Then add the following line to the end of the user's `crontab`:
+Then add the following **as a single line** (it is split below for clarity)
+to the end of the user's `crontab`:
 
-    15 *  * * *  python3 -m passcrow.server cleanup /etc/passcrow/server_config.py
+    5,20,35,50 *  * * *  python3 -m passcrow.server cleanup
+        /etc/passcrow/server_config.py
+        >/home/passcrow/www/storage-stats.json
 
+If you would rather not publish the storage stats, redirect the output
+to `/dev/null` instead.
