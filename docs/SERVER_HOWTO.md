@@ -28,6 +28,38 @@ Once this is complete you should have:
    4. Created `/var/spool/passcrow` for data
 
 
+## Configure gunicorn+passcrow to start on boot
+
+Install nginx:
+
+    apt install gunicorn
+
+Create `/etc/systemd/system/passcrow.service` with the following contents:
+
+    [Unit]
+    Description=passcrow gunicorn daemon
+    After=network.target
+    
+    [Service]
+    Type=notify
+    User=passcrow
+    Group=passcrow
+    RuntimeDirectory=passcrow
+    WorkingDirectory=/home/passcrow
+    ExecStart=/usr/bin/gunicorn --workers=1 \
+        passcrow.integration.flask_app:app /etc/passcrow/server_config.py
+    ExecReload=/bin/kill -s HUP $MAINPID
+    KillMode=mixed
+    TimeoutStopSec=5
+    
+    [Install]
+    WantedBy=multi-user.target
+
+Then enable it and (re)start it:
+
+    systemctl enable passcrow
+    systemctl restart passcrow
+
 ## Install and configure nginx
 
 Install nginx:
@@ -69,9 +101,16 @@ Create `/etc/nginx/sites-enabled/passcrow` with the following content:
             try_files $uri $uri/ =404;
         }
     
+        
+        client_max_body_size 4096;  # Should match server_config.py
+        keepalive_timeout 5;
+
         # Proxy to gunicorn/passcrow. Make sure the ports match!
         location /passcrow/ {
             limit_req zone=passcrow burst=5 nodelay;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_redirect off;
             proxy_pass http://127.0.0.1:8000;
         }
     }
@@ -111,7 +150,7 @@ Restart nginx to make sure everything is up to date:
 
 ## Configuring local e-mail
 
-TBD.
+FIXME
 
 
 ## Configuring a remote mail server
