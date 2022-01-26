@@ -133,5 +133,13 @@ Remember to restart the passcrow gunicorn process after editing the settings.
 
 ## Install Passcrow maintenance cron-job
 
-TBD: Should delete expired things from DB, update stats?
+To make sure old data gets flushed from the underlying storage in a
+timely fashion:
+
+    su - passcrow
+    crontab -e
+
+Then add the following line to the end of the user's `crontab`:
+
+    15 *  * * *  python3 -m passcrow.server cleanup /etc/passcrow/server_config.py
 

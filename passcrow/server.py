@@ -42,6 +42,11 @@ class JsonError(_json_object):
 
 
 class PasscrowServer:
+    STORAGE_TABLES = {
+        'escrow': ['data'],
+        'vcodes': ['data'],
+        'rlimit': ['data']}
+
     def __init__(self, storage,
             log=None,
             handlers=None,
@@ -80,9 +85,8 @@ class PasscrowServer:
             'recoveryrequest': self.process_RecoveryRequest,
             'verificationrequest': self.process_VerificationRequest}
 
-        self.storage.prepare_table('escrow', ['data'])
-        self.storage.prepare_table('vcodes', ['data'])
-        self.storage.prepare_table('rlimit', ['data'])
+        for table, columns in self.STORAGE_TABLES.items():
+            self.storage.prepare_table(table, columns)
 
     def handle(self, user_info, rpc_method, rdata):
         try:
@@ -408,3 +412,27 @@ handlers = {
 
         return cls(storage,
             **dict((k, config.get(k)) for k in SERVER_SETTINGS))
+
+    def cli_cleanup(self):
+        for table in self.STORAGE_TABLES:
+            self.storage.expire_table(table)
+        return True
+
+
+if __name__ == '__main__':
+    try:
+        command = sys.argv[1]
+        server = PasscrowServer.FromConfig(sys.argv[2:])
+        if not hasattr(server, 'cli_' + command):
+            raise ValueError('Invalid command')
+    except (IndexError, ValueError):
+        sys.stderr.write("""\
+Usage: python3 -m passcrow.server CMD /path/to/config.py [<SERVER-OPTS>]
+
+Where CMD is one of:
+
+    cleanup      Perform regular maintenance (expire old data, etc.)
+
+""")
+        sys.exit(1)
+    sys.exit(0 if getattr(server, 'cli_' + command)() else 1)
