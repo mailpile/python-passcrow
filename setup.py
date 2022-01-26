@@ -10,7 +10,7 @@
 import setuptools
 from distutils.core import setup
 
-VERSION = '0.0.3'
+from passcrow import VERSION
 
 setup(
   name = 'passcrow',

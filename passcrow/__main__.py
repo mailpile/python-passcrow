@@ -5,6 +5,7 @@ import re
 import sys
 import time
 
+from . import VERSION
 from .util import arg_dict, cute_str
 
 
@@ -471,6 +472,8 @@ def cli_server_init(args):
 
 def cli_help(args, error=None):
     """
+    This is python-passcrow version @VERSION@.
+
     Passcrow is a tool to facilitate secure password/passphrase/key
     recovery when using local encryption.
 
@@ -489,7 +492,7 @@ def cli_help(args, error=None):
     configuration file it generates.
 
     Run `passcrow help COMMAND` for more details about each command.
-    """
+"""
     if error:
         p = lambda t: sys.stderr.write('%s\n' % t)
     else:
@@ -528,6 +531,8 @@ def cli_main(args):
         cli_help(args, error='Need a valid command to continue')
     return False
 
+
+cli_help.__doc__ = cli_help.__doc__.replace('@VERSION@', VERSION)
 
 CLI_COMMANDS.update({
     'server_init': cli_server_init,
