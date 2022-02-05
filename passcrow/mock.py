@@ -20,11 +20,6 @@ class MockHandler:
         return make_email_hint(email)
 
 
-def mock_warnings_to(address, expiration):
-    print('Should warn %s about service interruptions, until %d'
-        % (address, expiration))
-
-
 def sleep_func(sleeptime):
     time.sleep(1)
 
@@ -39,8 +34,7 @@ def prepare_mock_server(data_dir):
         handlers={
             'mailto': mock_handler,
             'tel': mock_handler,
-            'sms': mock_handler},
-        warnings_to=mock_warnings_to)
+            'sms': mock_handler})
 
 
 def urlopen_func(url, data=None, **kwargs):

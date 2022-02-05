@@ -64,7 +64,6 @@ class PasscrowServer:
             log=None,
             handlers=None,
             payments=None,
-            warnings_to=None,
             country_code=None,
             about_url=None,
             expiration=None,
@@ -95,7 +94,6 @@ class PasscrowServer:
                     break
         self.payments = dict((p.scheme_id, p) for p in payments)
         self.handlers = handlers or {'mailto': MailtoHandler()}
-        self.warnings_to = warnings_to
         self.endpoints = {
             'stats': self.generate_Stats,
             'policy': self.generate_Policy,
@@ -202,11 +200,6 @@ class PasscrowServer:
             if resp.expiration <= now:
                 resp.error = 'Insufficient payment'
                 return resp
-
-            # If the user has requested service uptime warnings, add them
-            # to our "mailing list" for such things.
-            if 'warnings-to' in reqp and reqp.warnings_to and self.warnings_to:
-                self.warnings_to(reqp.warnings_to, resp.expiration)
 
             # If we get this far, we know we can decrypt data from this
             # client and verify their Identity. And they've paid!
@@ -410,7 +403,6 @@ handlers = {
             'log': ValueError,
             'handlers': ValueError,
             'payments': ValueError,
-            'warnings_to': ValueError,
             'country_code': str,
             'about_url': str,
             'expiration': int,

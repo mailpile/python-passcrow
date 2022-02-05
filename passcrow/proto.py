@@ -92,13 +92,6 @@ class EscrowRequestParameters(_encrypted_json_object):
     The `payment` is a  tokens (strings) which represents payment for the
     service requested.
 
-    The `warnings_to` attribute is opional, if present listing a single
-    Identity, which should be warned if the server is experiencing
-    operational issues which may prevent recovery. This includes both
-    serious server-side operational issues, and user-initiated deletion
-    of escrowed data. This should be omitted for users who need strong
-    anonymity guarantees.
-
     The `prefer_id` is optional and can be used to ask the escrow server
     to allocate a chosen ID to this data. The server may choose not to
     honor this request.
@@ -106,13 +99,11 @@ class EscrowRequestParameters(_encrypted_json_object):
     _KEYS = {
         "kind": str,
         "expiration": int,
-        "warnings-to": Identity,
         "prefer-id": str,
         "payment": str}
 
     kind = property(*_json_object_prop('kind'))
     expiration = property(*_json_object_prop('expiration'))
-    warnings_to = property(*_json_object_prop('warnings-to'))
     prefer_id = property(*_json_object_prop('prefer-id'))
     payment = property(*_json_object_prop('payment'))
 

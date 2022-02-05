@@ -178,12 +178,12 @@ class PasscrowIdentityPolicy:
     """
     Verification policies are expressed as text like so:
 
-        <ID>[, warn=<ID>][, notify=<ID>][ via <HELPER_NAME>]
+        <ID>[, notify=<ID>][ via <HELPER_NAME>]
 
     Example:
 
         mailto:a@a.org via passcrow.example.org
-        mailto:a@a.org, warn=-, notify=b@b.com via passcrow.org
+        mailto:a@a.org, notify=b@b.com via passcrow.org
 
     An <ID> is contact URL, such as mailto:bre@example.org or
     tel:+3545885522. For convenience, white-space is collapsed and
@@ -196,7 +196,6 @@ class PasscrowIdentityPolicy:
     """
     def __init__(self):
         self.id = None
-        self.warn = None
         self.notify = None
         self.server = None
         self.timeout = None
@@ -206,8 +205,6 @@ class PasscrowIdentityPolicy:
 
     def __str__(self):
         txt = self.id
-        if self.warn:
-            txt += ', warn=' + self.warn
         if self.notify:
             txt += ', notify=' + self.notify
         if self.server:
@@ -230,8 +227,6 @@ class PasscrowIdentityPolicy:
         kinds = set([self.id.kind])
         if self.notify:
             kinds.add(self.notify.kind)
-        if self.warn:
-            kinds.add(self.warn.kind)
         for psp in defaults.servers:
             psp_kinds = set(psp.kinds)
             if not (kinds - psp_kinds):
@@ -250,8 +245,6 @@ class PasscrowIdentityPolicy:
             self.id, self.server = self.id.rsplit(' via ', 1)
         if ', notify=' in self.id:
             self.id, self.notify = self.id.rsplit(', notify=')
-        if ', warn=' in self.id:
-            self.id, self.warn = self.id.rsplit(', warn=')
 
         dpip = self._default_pip(defaults)
 
@@ -260,13 +253,7 @@ class PasscrowIdentityPolicy:
         elif dpip and not self.notify:
             self.notify = dpip.notify
 
-        if self.warn == '-':
-            self.warn = None
-        elif dpip and not self.warn:
-            self.warn = dpip.warn
-
         self.id = Identity(self.id)
-        self.warn = Identity(self.warn) if self.warn else None
         self.notify = Identity(self.notify) if self.notify else None
 
         if dpip and not self.server:
@@ -439,8 +426,6 @@ class PasscrowClient:
         erp.expiration *= (24 * 3600)
         erp.payment = self._make_payment(idp, erp.expiration, str(erd))
         erp.expiration += int(time.time())
-        if idp.warn:
-            erp.warnings_to = idp.warn
         if escrow_id:
             erp.prefer_id = escrow_id
         erp.encrypt(random_aesgcm_key())
