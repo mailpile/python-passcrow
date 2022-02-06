@@ -32,6 +32,9 @@ Passcrow is not a general purpose online data storage.
 
 Passcrow is not a cryptocurrency and does not use a blockchain.
 
+Passcrow is not a [government surveillance](https://www.schneier.com/academic/archives/1997/04/the_risks_of_key_rec.html)
+back-door.
+
 
 ### Motivation
 
