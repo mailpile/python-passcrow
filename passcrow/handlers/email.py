@@ -64,7 +64,7 @@ Read more here: %(about_url)s
 """
 
     def __init__(self,
-            smtp_server=None, 
+            smtp_server=None,
             smtp_login=None,
             smtp_password=None,
             sendmail_binary=None,
@@ -97,7 +97,7 @@ Read more here: %(about_url)s
             'description': description,
             'vcode': vcode}
 
-    def body(self, server, description, vcode, tmo_seconds):        
+    def body(self, server, description, vcode, tmo_seconds):
         return self.MESSAGE_BODY % {
             'description': description,
             'vcode': vcode,
@@ -116,7 +116,7 @@ Read more here: %(about_url)s
             % (len(message), email, proc.returncode, output or '(no output)'))
 
         if proc.returncode != 0:
-            raise IOError(se) 
+            raise IOError(se)
 
     def _send_via_smtp(self, server, email, message):
         message = bytes(message, 'utf-8')
@@ -131,7 +131,7 @@ Read more here: %(about_url)s
         else:
             host, ports = self.smtp_server, [465, 587, 25]
 
-        err = 'Failed?' 
+        err = 'Failed?'
         for tries, port in enumerate(ports + ports):
             try:
                 smtp_cls = pmap.get(port, smtplib.SMTP)
