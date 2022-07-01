@@ -20,6 +20,18 @@ This package includes the following things:
    3. A passcrow server implementation
 
 
+## Intended Audience
+
+This software is primarily a tool for developers of Open Source software
+which uses strong encryption to protect user data, and expects users to
+keep track of a password, passphrase or "reset code" to safeguard their
+data. Want to add recovery options to your tool? Passcrow can help.
+
+A secondary audience, is technically sophisticted end users who want to
+directly add recovery options to local encryption tools such as GnuPG,
+a Bitcoin wallet, an encrypted hard drive, or their password manager.
+
+
 ## Other Resources
 
 You are reading the instructions for people who just want to use Passcrow!
