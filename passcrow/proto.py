@@ -63,7 +63,9 @@ class Identity(str):
         if ':' not in other:
             if '@' in other:
                 other = 'mailto:' + other
-            elif re.match(r'^\+?(\d+[- ]?)+\d\d+$', other):
+            # Check length first, to thwart regexp DOS attacks
+            elif ((len(other) < 25)
+                    and re.match(r'^\+?(\d+[- ]?)+\d\d+$', other)):
                 other = 'tel:' + other
         if ':' not in other:
             raise ValueError('Invalid identity: %s' % other)

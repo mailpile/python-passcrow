@@ -4,7 +4,9 @@ from ..proto import register_identity_kind
 
 
 def validate_tel_identity(pnr):
-    if not re.match(r'^\+?(\d+[- ]?)+\d\d+$', pnr.split(':', 1)[1]):
+    # Check length first, to thwart regexp DOS attacks
+    if ((len(pnr) > 24) or
+            (not re.match(r'^\+?(\d+[- ]?)+\d\d+$', pnr.split(':', 1)[1]))):
         raise ValueError('Phone numbers should be digits, dashes and spaces')
     # FIXME: Validate more?
     return pnr
