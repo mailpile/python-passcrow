@@ -238,6 +238,9 @@ class PasscrowIdentityPolicy:
             if not (kinds - psp_kinds):
                 pip.server = psp.server
                 break
+        if defaults.servers:
+            wo = [s for s in defaults.servers if s != pip.server]
+            defaults.servers = wo + [pip.server]
         return pip
 
     def get_timeout(self):
@@ -262,7 +265,9 @@ class PasscrowIdentityPolicy:
         self.id = Identity(self.id)
         self.notify = Identity(self.notify) if self.notify else None
 
-        if dpip and not self.server:
+        if not self.server:
+            if not dpip:
+                dpip = PasscrowIdentityPolicy()
             dpip = self._choose_server(dpip, defaults)
             self.server = dpip.server
 
