@@ -268,7 +268,8 @@ class PasscrowIdentityPolicy:
         if not self.server:
             if not dpip:
                 dpip = PasscrowIdentityPolicy()
-            dpip = self._choose_server(dpip, defaults)
+            if defaults:
+                dpip = self._choose_server(dpip, defaults)
             self.server = dpip.server
 
         return self
