@@ -131,6 +131,9 @@ class _json_object():
     def __json__(self):
         return str(self)
 
+    def __repr__(self):
+        return '<%s=%s>' % (type(self).__name__, self)
+
     def __str__(self):
         return json.dumps(self._dict, indent=2, cls=_json_encoder)
 

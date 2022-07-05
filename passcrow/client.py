@@ -165,6 +165,9 @@ class PasscrowServerPolicy:
         self.kinds = []
         self.server = None
 
+    def __repr__(self):
+        return '<%s=%s>' % (type(self).__name__, self)
+
     def __str__(self):
         return '%s via %s' % (', '.join(self.kinds), self.server)
 
@@ -202,6 +205,9 @@ class PasscrowIdentityPolicy:
         self.expiration = None
 
     usable = property(lambda s: s.server and s.id)
+
+    def __repr__(self):
+        return '<%s=%s>' % (type(self).__name__, self)
 
     def __str__(self):
         txt = self.id
@@ -291,6 +297,9 @@ class PasscrowClientPolicy:
         rn = max(1, round(self.n * adjust))  # Zero is never OK
 
         return rn, rm
+
+    def __repr__(self):
+        return '<%s=%s>' % (type(self).__name__, self)
 
     def __str__(self):
         text = '%d/%d of %s' % (
@@ -543,6 +552,10 @@ class PasscrowClient:
         failures = []
         def prep(task, delay):
             idp, share, mer_kwargs = task
+            if not idp.id:
+                raise ValueError('Invalid ID: %s' % idp.id)
+            if not idp.server:
+                raise ValueError('Need a server for id %s' % idp.id)
             self.log(
                 'Slept %3.3ds. Escrow share %s for %s with %s'
                 % (delay, share.split('-')[0], idp.id, idp.server))

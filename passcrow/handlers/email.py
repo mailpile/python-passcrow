@@ -16,11 +16,12 @@ WEAK_EMAIL_RE = re.compile(r'^\S+@[A-Za-z0-9][A-Za-z0-9-\.]*[A-Za-z0-9]$')
 def validate_email_identity(mailto):
     email = mailto.split(':', 1)[-1]
     if not mailto.startswith('mailto:'):
-        raise ValueError('Not a mailto: identity')
+        raise ValueError('Not a mailto: identity (%s)' % mailto)
     if '@' not in email:
-        raise ValueError('E-mail addresses must have an @ sign')
+        raise ValueError('E-mail addresses must have an @ sign (%s)' % mailto)
     if not WEAK_EMAIL_RE.match(email):
-        raise ValueError('That does not look like an e-mail address')
+        raise ValueError(
+            'That does not look like an e-mail address (%s)' % mailto)
     return mailto
 
 
