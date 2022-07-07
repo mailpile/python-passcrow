@@ -128,10 +128,10 @@ def cli_init(args):
     pc = make_pc(args, create_dirs=True)
 
     # Enable the test server by default
-    pc.default_policy.servers = ['mailto via passcrow-test.mailpile.is']
+    pc.default_policy.servers = ['email via passcrow-test.mailpile.is']
     sys.stderr.write("""\
 NOTE: Configuring `passcrow-test.mailpile.is` as the default server for
-      e-mail (mailto) verification. Note that this server is for testing
+      email (a.k.a. mailto) verification. Note this server is for testing
       only and deletes all data after 30 days, no matter what expiration
       has been requested/promised.\n\n""")
 

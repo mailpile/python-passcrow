@@ -62,7 +62,7 @@ class Configuration:
 
             # These are our preferred recovery servers
             default_servers=[
-                'mailto, sms via passcrow-test.mailpile.is'],
+                'email, sms via passcrow-test.mailpile.is'],
 
             # By default, this stores Passcrow settings and data with
             # other app data. But we set both env_override=True and

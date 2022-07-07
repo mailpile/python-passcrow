@@ -146,14 +146,14 @@ Restart nginx to make sure everything is up to date:
 Edit `/etc/passcrow/server_config.py` so it includes the following lines,
 adjusted to match your setup:
 
-    mailto_handler = MailtoHandler(
+    email_handler = EmailHandler(
         smtp_server    = 'smtp.example.org:465',
         smtp_login     = 'username',
         smtp_password  = 'password',
         mail_from      = 'Passcrow <passcrow@example.org>')
     
     handlers = {
-        'mailto': mailto_handler}
+        'email': email_handler}
 
 Remember to restart the passcrow gunicorn process after editing the settings.
 
@@ -168,12 +168,12 @@ If you have a local mail server up and running, you can configure the
 passcrow server to use it, by editing `/etc/passcrow/server_config.py` so
 it includes the following (edit to taste):
 
-    mailto_handler = MailtoHandler(
+    email_handler = EmailHandler(
         sendmail_binary = '/usr/sbin/sendmail',
         mail_from       = 'Passcrow <passcrow@example.org>')
     
     handlers = {
-        'mailto': mailto_handler}
+        'email': email_handler}
 
 
 ## Install Passcrow maintenance cron-job

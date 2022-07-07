@@ -33,13 +33,13 @@ EXPLAIN_KINDS = {}
 class Identity(str):
     """
     An Identity is a string of the form `kind:address` (such as
-    `mailto:bre@example.org` or `tel:+3545885522`), to which a recovery
+    `email:bre@example.org` or `tel:+3545885522`), to which a recovery
     code can be sent. The address part is an e-mail address, a
     telephone number, or some verifiable identity.
 
     Examples of `kind` values include:
 
-        mailto: for e-mail addresses
+        email: for e-mail addresses
         tel: telephone numbers (server decides how to contact)
         sms: telephone numbers using SMS-based verification
         signal: telephone numbers over Signal
@@ -62,7 +62,7 @@ class Identity(str):
     def __new__(self, other):
         if ':' not in other:
             if '@' in other:
-                other = 'mailto:' + other
+                other = 'email:' + other
             # Check length first, to thwart regexp DOS attacks
             elif ((len(other) < 25)
                     and re.match(r'^\+?(\d+[- ]?)+\d\d+$', other)):
@@ -383,8 +383,8 @@ if __name__ == "__main__":
 
     erd = EscrowRequestData().update({
         'description': 'Foo-wallet',
-        'notify': 'mailto:bre@example.org',
-        'verify': 'mailto:bre@example.org'})
+        'notify': 'email:bre@example.org',
+        'verify': 'email:bre@example.org'})
     erp = EscrowRequestParameters()
     erp.payment = ['1234']
     erp.expiration = time.time() + 3600

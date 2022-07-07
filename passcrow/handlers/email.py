@@ -14,9 +14,9 @@ WEAK_EMAIL_RE = re.compile(r'^\S+@[A-Za-z0-9][A-Za-z0-9-\.]*[A-Za-z0-9]$')
 
 
 def validate_email_identity(mailto):
-    email = mailto.split(':', 1)[-1]
-    if not mailto.startswith('mailto:'):
-        raise ValueError('Not a mailto: identity (%s)' % mailto)
+    proto, email = mailto.split(':', 1)
+    if proto not in ('mailto', 'email'):
+        raise ValueError('Not a mailto: or email: identity (%s)' % mailto)
     if '@' not in email:
         raise ValueError('E-mail addresses must have an @ sign (%s)' % mailto)
     if not WEAK_EMAIL_RE.match(email):
@@ -39,7 +39,7 @@ def make_email_hint(email):
     return '%s*@%s*%s' % (u1, d1, d2)
 
 
-class MailtoHandler:
+class EmailHandler:
     MESSAGE_SUBJECT = "Passcrow Verification Code"
     MESSAGE_BODY = """\
 Your verification code is: %(vcode)s
@@ -174,5 +174,10 @@ Read more here: %(about_url)s
         return make_email_hint(mailto)
 
 
+class MailtoHandler(EmailHandler):
+    pass
+
+
 from ..proto import register_identity_kind
 register_identity_kind('mailto', validate_email_identity, 'e-mail to')
+register_identity_kind('email', validate_email_identity, 'e-mail to')

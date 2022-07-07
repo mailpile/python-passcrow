@@ -5,12 +5,12 @@ your Python app, using the `passcrow` library.
 
 Topics:
 
-   1. [Add passcrow as a dependency, install it](#add-passcrow-as-a-dependency-install-it)
-   2. [Decide what data to make recoverable](#decide-what-data-to-make-recoverable)
-   3. [Define a Recovery Policy](#define-a-recovery-policy)
-   4. [Protect the data with Passcrow](#protect-the-data-with-passcrow)
-   5. [Recovering data with Passcrow](#recovery-data-with-passcrow)
-   6. [Deleting data from Passcrow](#deleting-data-from-passcrow)
+   * [Add passcrow as a dependency, install it](#add-passcrow-as-a-dependency-install-it)
+   * [Decide what data to make recoverable](#decide-what-data-to-make-recoverable)
+   * [Define a Recovery Policy](#define-a-recovery-policy)
+   * [Protect the data with Passcrow](#protect-the-data-with-passcrow)
+   * [Recovering data with Passcrow](#recovery-data-with-passcrow)
+   * [Deleting data from Passcrow](#deleting-data-from-passcrow)
 
 The code snippets in this guide are compiled into a runnable Python app
 in [integration-demo.py](integration-demo.py).
@@ -137,8 +137,8 @@ override them.
     
                 # These are our preferred recovery servers
                 default_servers=[
-                    'tel, sms, mailto via passcrow.app.org',
-                    'mailto via passcrow.mailpile.is'],
+                    'tel, sms, email via passcrow.app.org',
+                    'email via passcrow.mailpile.is'],
     
                 # By default, this stores Passcrow settings and data with
                 # other app data. But we set both env_override=True and

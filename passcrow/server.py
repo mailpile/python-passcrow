@@ -9,7 +9,7 @@ import appdirs
 from .proto import *
 
 from . import VERSION
-from .handlers.email import MailtoHandler
+from .handlers.email import EmailHandler
 from .payments import PaymentFree, PaymentHashcash
 from .secret_share import random_int
 from .storage import FileSystemStorage
@@ -93,7 +93,9 @@ class PasscrowServer:
                         PaymentHashcash(self.storage, bits, self.expiration))
                     break
         self.payments = dict((p.scheme_id, p) for p in payments)
-        self.handlers = handlers or {'mailto': MailtoHandler()}
+        self.handlers = handlers or {
+            'mailto': EmailHandler(),
+            'email': EmailHandler()}
         self.endpoints = {
             'stats': self.generate_Stats,
             'policy': self.generate_Policy,
@@ -360,9 +362,9 @@ vrfy_timeout      = 24 * 3600        # Max time-to-live for verification codes
 
 # Verification handlers
 #
-from passcrow.handlers.email import MailtoHandler
+from passcrow.handlers.email import EmailHandler
 
-mailto_handler = MailtoHandler(
+email_handler = EmailHandler(
 #
 # Uncomment and update SMTP server settings:
 #
@@ -387,7 +389,7 @@ mailto_handler = MailtoHandler(
 handlers = {
 #   'sms': sms_handler,        # Uncomment to enable sms: verification
 #   'tel': sms_handler,        # Uncomment to enable tel: verfication
-    'mailto': mailto_handler}
+    'email': email_handler}
 
 #EOF#
 """ % (

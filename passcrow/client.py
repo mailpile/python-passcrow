@@ -159,7 +159,7 @@ class PasscrowServerPolicy:
         <KIND_LIST> via <SERVER_NAME>
 
     Where the KIND_LIST is a comma separated list of protocols such
-    as `mailto`, `tel` or `sms`.
+    as `email`, `tel` or `sms`.
     """
     def __init__(self):
         self.kinds = []
@@ -185,10 +185,10 @@ class PasscrowIdentityPolicy:
 
     Example:
 
-        mailto:a@a.org via passcrow.example.org
-        mailto:a@a.org, notify=b@b.com via passcrow.org
+        email:a@a.org via passcrow.example.org
+        email:a@a.org, notify=b@b.com via passcrow.org
 
-    An <ID> is contact URL, such as mailto:bre@example.org or
+    An <ID> is contact URL, such as email:bre@example.org or
     tel:+3545885522. For convenience, white-space is collapsed and
     URL prefixes are added automatically to bare e-mail addresses
     and phone numbers. The commas, and order of elements, and the
@@ -840,7 +840,7 @@ class PasscrowClient:
 # and deletes all data after 30 days, no matter what expiration has been
 # requested (or promised).
 #
-#server: mailto via passcrow-test.mailpile.is
+#server: email via passcrow-test.mailpile.is
 #server: sms, tel via sms.passcrow.example.org
 #
 #expiration_days: 365   # How long we request key fragments persist in escrow

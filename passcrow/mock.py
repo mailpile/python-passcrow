@@ -33,6 +33,7 @@ def prepare_mock_server(data_dir):
         FileSystemStorage(data_dir, create=True),
         handlers={
             'mailto': mock_handler,
+            'email': mock_handler,
             'tel': mock_handler,
             'sms': mock_handler})
 
