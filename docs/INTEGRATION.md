@@ -5,11 +5,15 @@ your Python app, using the `passcrow` library.
 
 Topics:
 
-   1. [Add passcrow as a dependency, install it](#install)
-   2. [Decide what data to make recoverable](#data)
-   3. [Define a Recovery Policy](#policy)
-   4. [Protect the data with Passcrow](#protect)
-   5. [Recovering data with Passcrow](#recovery)
+   1. [Add passcrow as a dependency, install it](#add-passcrow-as-a-dependency-install-it)
+   2. [Decide what data to make recoverable](#decide-what-data-to-make-recoverable)
+   3. [Define a Recovery Policy](#define-a-recovery-policy)
+   4. [Protect the data with Passcrow](#protect-the-data-with-passcrow)
+   5. [Recovering data with Passcrow](#recovery-data-with-passcrow)
+   6. [Deleting data from Passcrow](#deleting-data-from-passcrow)
+
+The code snippets in this guide are compiled into a runnable Python app
+in [integration-demo.py](integration-demo.py).
 
 
 ## Add passcrow as a dependency, install it

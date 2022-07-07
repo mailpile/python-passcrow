@@ -40,7 +40,7 @@ See also:
 
    * [Frequently Asked Questions](docs/FAQ.md)
    * [Protocol documentation](docs/PROTOCOL.md)
-   * [Integration guide](docs/INTEGRATION.md).
+   * [Integration guide](docs/INTEGRATION.md) (for Python developers)
    * [Community forum](https://community.mailpile.is/c/development/passcrow)
 
 
