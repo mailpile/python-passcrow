@@ -25,7 +25,8 @@ This package includes the following things:
 This software is primarily a tool for developers of Open Source software
 which uses strong encryption to protect user data, and expects users to
 keep track of a password, passphrase or "reset code" to safeguard their
-data. Want to add recovery options to your tool? Passcrow can help.
+data. Want to add recovery options to your tool?
+[Passcrow can help](docs/INTEGRATION.md).
 
 A secondary audience, is technically sophisticted end users who want to
 directly add recovery options to local encryption tools such as GnuPG,
@@ -39,31 +40,13 @@ See also:
 
    * [Frequently Asked Questions](docs/FAQ.md)
    * [Protocol documentation](docs/PROTOCOL.md)
+   * [Integration guide](docs/INTEGRATION.md).
    * [Community forum](https://community.mailpile.is/c/development/passcrow)
-
-
-## Getting Started - As a Passcrow Developer
-
-    ## Install requirements (use one of the following)
-    $ apt install python3-cryptography python3-appdirs
-    $ dnf install python3-cryptography python3-appdirs
-    $ pip3 install cryptography appdirs
-
-    # Get the code
-    $ git pull https://github.com/mailpile/python-passcrow
-    $ cd python-passcrow
-
-    # Test if it runs
-    $ python3 -m passcrow help
-
-TODO:
-
-   * Document some hacker hints
 
 
 ## Getting Started - As a User
 
-    ## Install requirements (use one of the following)
+    ## Install requirements (use one of the following, may need sudo!)
     $ apt install python3-cryptography python3-appdirs
     $ dnf install python3-cryptography python3-appdirs
     $ pip3 install cryptography appdirs
@@ -94,7 +77,7 @@ To learn more about passcrow commands, options and arguments:
 
 ## Getting Started - As a Python app Developer
 
-    ## Install requirements (use one of the following)
+    ## Install requirements (use one of the following, may need sudo!)
     $ apt install python3-cryptography python3-appdirs
     $ dnf install python3-cryptography python3-appdirs
     $ pip3 install cryptography appdirs
@@ -118,9 +101,8 @@ You can verify it is up and running like so:
 
     $ curl https://KITE_NAME/passcrow/policy
 
-TODO:
-
-   * Create proper API docs for the passcrow client library
+For guidance on how to integrate Passcrow into your app, consulte the
+[Integration guide](docs/INTEGRATION.md).
 
 
 ## Getting Started - As a Server Admin
@@ -131,7 +113,7 @@ and may make use of 3rd party APIs such as Twilio.
 There are a few standard patterns for running such a server, one of which is
 described here below:
 
-    ## Install requirements (use one of the following)
+    ## Install requirements (use one of the following, may need sudo!)
     $ apt install python3-{pip,cryptography,appdirs,flask} gunicorn
     $ dnf install python3-{pip,cryptography,appdirs,flask} gunicorn
     $ pip3 install cryptography appdirs flask gunicorn
@@ -157,6 +139,25 @@ server. And of course `letsencrypt` to procure and renew TLS certificates, if
 you haven't already.
 
 For further details, consult [the Passcrow Server Howto](docs/SERVER_HOWTO.md).
+
+
+## Getting Started - As a Passcrow Developer
+
+    ## Install requirements (use one of the following, may need sudo!)
+    $ apt install python3-cryptography python3-appdirs
+    $ dnf install python3-cryptography python3-appdirs
+    $ pip3 install cryptography appdirs
+
+    # Get the code
+    $ git pull https://github.com/mailpile/python-passcrow
+    $ cd python-passcrow
+
+    # Test if it runs
+    $ python3 -m passcrow help
+
+TODO:
+
+   * Document some hacker hints
 
 
 ## Copyright and License

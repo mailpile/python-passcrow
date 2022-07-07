@@ -26,7 +26,7 @@ def make_policy(args, pc=None, optional=False):
         -m <MINUTES>  Request verification timeouts of this many minutes
         -I            Ignore any default settings
     """
-    from .client import PasscrowIdentityPolicy, PasscrowClientPolicy
+    from .client import PasscrowIdentityPolicy, PasscrowRecoveryPolicy
 
     defaults = not args.get('-I')
     exp_days = int(args.get('-d', [0])[0]) or None
@@ -70,7 +70,7 @@ def make_policy(args, pc=None, optional=False):
     else:
         n = m = None
 
-    return PasscrowClientPolicy(idps=idps, n=n, m=m,
+    return PasscrowRecoveryPolicy(idps=idps, n=n, m=m,
         expiration_days=exp_days,
         timeout_minutes=tmo_mins)
 

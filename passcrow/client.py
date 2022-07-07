@@ -233,14 +233,16 @@ class PasscrowIdentityPolicy:
         kinds = set([self.id.kind])
         if self.notify:
             kinds.add(self.notify.kind)
+        used_psp = None
         for psp in defaults.servers:
             psp_kinds = set(psp.kinds)
             if not (kinds - psp_kinds):
                 pip.server = psp.server
+                used_psp = psp
                 break
-        if defaults.servers:
-            wo = [s for s in defaults.servers if s != pip.server]
-            defaults.servers = wo + [pip.server]
+        if defaults.servers and used_psp:
+            defaults.servers.remove(used_psp)
+            defaults.servers.append(used_psp)
         return pip
 
     def get_timeout(self):
@@ -275,20 +277,48 @@ class PasscrowIdentityPolicy:
         return self
 
 
-class PasscrowClientPolicy:
-    def __init__(self, idps=None,
+class PasscrowRecoveryPolicy:
+    def __init__(self,
+            idps=None,
             n=None, m=None,
-            servers=None,
             expiration_days=None,
-            timeout_minutes=None):
-        self.idps = idps or []
-        # Set our default ratio
+            timeout_minutes=None,
+            servers=None,
+            defaults=None,
+            default_policy=False):
+        # Set general policy preferences
         self.n = DEFAULT_N if (n is None) else n
         self.m = DEFAULT_M if (m is None) else m
+        self.expiration_days = expiration_days or DEFAULT_EXP_DAYS
+        self.timeout_minutes = timeout_minutes or DEFAULT_TMO_MINS
+
+        if not default_policy:
+            if defaults:
+                if not expiration_days:
+                    self.expiration_days = defaults.expiration_days
+                if not timeout_minutes:
+                    self.timeout_minutes = defaults.timeout_minutes
+            elif servers:
+                # Create a default policy from the provided server list
+                defaults = PasscrowRecoveryPolicy(
+                    servers=servers,
+                    default_policy=True)
+
+        # Set identity list, parsing if necessary
+        self.idps = []
+        if idps:
+            self.idps = [
+                (i if isinstance(i, PasscrowIdentityPolicy)
+                    else PasscrowIdentityPolicy().parse(i, defaults=defaults))
+                for i in idps]
+
         # This is for default policies only
-        self.servers = servers or []
-        self.expiration_days = expiration_days
-        self.timeout_minutes = timeout_minutes
+        self.servers = []
+        if default_policy and servers:
+            self.servers = [
+                (s if isinstance(s, PasscrowServerPolicy)
+                    else PasscrowServerPolicy().parse(s))
+                for s in servers]
 
     def absolute_ratio(self, reserve=0):
         available = len(self.idps) - reserve
@@ -311,9 +341,9 @@ class PasscrowClientPolicy:
         text = '%d/%d of %s' % (
             self.n,
             self.m,
-            ', '.join(str(i) for i in self.idps))
+            (', '.join(str(i) for i in self.idps)) if self.idps else '(ids)')
         if self.servers:
-            text += ' (%s)' % ', '.join(str(sp) for sp in self.servers)
+            text += ' servers=(%s)' % ', '.join(str(sp) for sp in self.servers)
         return text
 
 
@@ -328,27 +358,37 @@ class PasscrowClient:
 
     def __init__(self,
             config_dir=None, data_dir=None, env_override=True,
+            create_dirs=False,
+            load_defaults=True,
+
             default_ids=None,
+            default_servers=None,
             default_n=None,
             default_m=None,
             default_expiration_days=None,
             default_timeout_minutes=None,
-            create_dirs=False, logger=None,
-            sleep_min=None, sleep_max=None,
-            sleep_func=None,
+
+            sleep_min=None, sleep_max=None, sleep_func=None,
+            logging_func=None,
             urlopen_func=None):
-        self.log = logger or print
+
         self.config_dir = config_dir or SHARED_CONFIG_DIR
         self.data_dir = data_dir or SHARED_DATA_DIR
+
         self.sleep_min = DEFAULT_SLEEP_MIN if sleep_min is None else sleep_min
         self.sleep_max = DEFAULT_SLEEP_MAX if sleep_max is None else sleep_max
-        self.expiration_days = default_expiration_days or DEFAULT_EXP_DAYS
-        self.timeout_minutes = default_timeout_minutes or DEFAULT_TMO_MINS
-        self.default_policy = PasscrowClientPolicy(
-             idps=default_ids or [], n=default_n, m=default_m)
-
+        self.log = logging_func or print
         self.sleep = sleep_func or time.sleep
         self.urlopen = urlopen_func or _default_urlopen
+
+        self.default_policy = PasscrowRecoveryPolicy(
+            idps=default_ids,
+            servers=default_servers,
+            n=default_n,
+            m=default_m,
+            expiration_days=default_expiration_days,
+            timeout_minutes=default_timeout_minutes,
+            default_policy=True)
 
         # FIXME: Cache these on disk, load on startup
         self.server_policies = {}
@@ -359,16 +399,21 @@ class PasscrowClient:
             self.config_dir = os.getenv('PASSCROW_CONFIG', self.config_dir)
             self.data_dir = os.getenv('PASSCROW_DATA', self.data_dir)
 
+        just_created = False
         for path in (self.config_dir, self.data_dir):
             if not os.path.exists(path):
                 if not create_dirs:
                     raise OSError('Directory not found: %s' % path)
                 pmkdir(path, 0o700)
                 self.log('%s: Created %s' % (self, path))
+                just_created = True
         try:
-            self.load_default_policy()
+            if load_defaults:
+                self.load_default_policy()
         except (OSError, IOError):
             pass
+        if just_created:
+            self.save_default_policy()
 
     def __str__(self):
         if self.config_dir != self.data_dir:
@@ -437,7 +482,7 @@ class PasscrowClient:
 
         erp = EscrowRequestParameters()
         erp.kind = idp.id.split(':')[0]
-        erp.expiration = (policy.expiration_days or self.expiration_days)
+        erp.expiration = policy.expiration_days
         erp.expiration *= (24 * 3600)
         erp.payment = self._make_payment(idp, erp.expiration, str(erd))
         erp.expiration += int(time.time())
@@ -742,13 +787,11 @@ class PasscrowClient:
                     timeout_minutes = int(what)
                 else:
                     raise ValueError('Unknown setting: %s' % op)
-        self.default_policy = PasscrowClientPolicy(
-            idps=idps, n=n, m=m, servers=servers)
+        self.default_policy = PasscrowRecoveryPolicy(
+            idps=idps, n=n, m=m, servers=servers, default_policy=True)
         if expiration_days:
-            self.expiration_days = expiration_days
             self.default_policy.expiration_days = expiration_days
         if timeout_minutes:
-            self.timeout_minutes = timeout_minutes
             self.default_policy.timeout_minutes = timeout_minutes
 
     def save_default_policy(self):
