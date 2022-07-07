@@ -7,6 +7,18 @@ The document is written with Debian derived Linux distributions in mind, but
 the steps and processes should translate easily to other Unix-like operating
 systems.
 
+Contents:
+
+   * [Installation](#installation)
+   * [Configure gunicorn+passcrow to start on boot](#configure-gunicornpasscrow-to-start-on-boot)
+   * [Install and configure nginx](#install-and-configure-nginx)
+   * [Configuring letsencrypt (certbot)](#configuring-letsencrypt-certbot)
+   * [Configuring a remote mail server](#configuring-a-remote-mail-server)
+   * [Configuring local e-mail](#configuring-local-e-mail)
+   * [Install Passcrow maintenance cron-job](#install-passcrow-maintenance-cron-job)
+   * [Updating to the latest versions](#updating-to-the-latest-version)
+   * [Monitoring your Server](#monitoring-your-server)
+
 
 ## Installation
 
@@ -53,6 +65,7 @@ Then enable it and (re)start it:
 
     systemctl enable passcrow
     systemctl restart passcrow
+
 
 ## Install and configure nginx
 
