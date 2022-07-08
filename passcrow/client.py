@@ -37,7 +37,10 @@ DEFAULT_VERIFY_DESC = 'Passcrow Data'
 DEFAULT_EXP_DAYS = 365  # Default requested escrow expiration
 DEFAULT_TMO_MINS = 30   # Default requested verification timeout
 
-VERIFICATION_PREFIXES = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+# Note: All caps! And oOlL must never be on the list!
+#       We put digits first so codes will usually be entirely numeric;
+#       for usability and similarity to popular systems.
+VERIFICATION_PREFIXES = '1234567890ABCDEFGHJKMNPQRSTUVWXYZ'
 
 EPHEMERAL_ONLY = 1
 EPHEMERAL_BOTH = 2
@@ -732,6 +735,10 @@ class PasscrowClient:
             shares.append(response.escrow_secret)
         def fmt_fail(prefix_esc, server, vreq, _id, e):
             return '%s on %s: %s' % (_id, server, e)
+
+        # Transform in case users are bad at typing
+        codes = [code.upper().replace('O', '0').replace('L', '1')
+                 for code in codes]
 
         codes = dict((code[:1].upper(), code) for code in codes)
         tasks = [(codes[c], esc)

@@ -255,7 +255,7 @@ class PasscrowServer:
 
             tmo = esd.timeout if ('timeout' in esd) else self.vrfy_timeout
             tmo = min(tmo, self.vrfy_timeout)
-            vcode = '%s-%6.6d' % (req.prefix, random_int(1000000))
+            vcode = '%s%6.6d' % (req.prefix, random_int(1000000))
             resp.expiration = int(time.time()) + tmo
             self.storage.delete('vcodes', _id)
             self.storage.insert('vcodes', vcode,
