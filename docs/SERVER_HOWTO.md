@@ -222,9 +222,9 @@ care not do depend on anything unsupported by mainstream distros):
 
 To update your server's python-passcrow to the latest version:
 
-    pip3 install passcrow==0.0.4
+    pip3 install passcrow==0.0.5
 
-Note: replace `0.0.4` with whatever is actually the
+Note: replace `0.0.5` with whatever is actually the
 [latest release on PyPI](https://pypi.org/project/passcrow/).
 
 Finally, be sure to restart the passcrow server after any updates.
