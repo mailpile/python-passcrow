@@ -183,7 +183,7 @@ Servers are well implemented and not malicious:
    anonymous and strongly encrypted, e.g. over HTTPS and/or Tor.
 
 
-**TODO:** *Describe Ephemeral Passcrow. tl;dr: escrowing the Recovery Pack*
+**FIXME:** *Describe Ephemeral Passcrow. tl;dr: escrowing the Recovery Pack*
 
 
 ---------------------------------------------------------------------------
@@ -254,4 +254,4 @@ See below for details on the encryption scheme.
 ...
 
 
-**TODO:** *write more docs*
+**FIXME:** *write more docs*

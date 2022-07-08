@@ -60,6 +60,9 @@ work and why, so [reading them](PROTOCOL.md) isn't a bad idea!
 The Python implementation of Passcrow, and the primary source for this
 documentation, both live here: <https://github.com/mailpile/python-passcrow/>
 
+If you just want to integrate Passcrow into your Python app, check out
+the [Integration Guide](INTEGRATION.md). It has code snippets!
+
 
 ## Where is the community?
 
@@ -169,8 +172,8 @@ Two examples:
    data in the Recovery Pack is the password you use to log in to your
    personal laptop.
 
-2. You define a recovery policy which requires all 2/3 of your manager,
-   the CTO and the CEO at your job to complete recovery. The protected data
+2. You define a recovery policy which requires 2/3 of your manager, the
+   CTO and the CEO at your job to complete recovery. The protected data
    in the Recovery Pack is the passphrase used to encrypt your work laptop.
 
 In both cases, Ephemeral Passcrow allows you then print a label with a URL
