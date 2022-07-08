@@ -104,8 +104,8 @@ User-Agent: Passcrow Server <%(about_url)s>
             }).strip()
 
     def signature(self, server, language):
-        fmt = VERIFICATION_SIGNATURE.get(language)
-        return ((fmt or VERIFICATION_SIGNATURE['en']) % {
+        fmt = VERIFICATION_BODY_SIGNATURE.get(language)
+        return ((fmt or VERIFICATION_BODY_SIGNATURE['en']) % {
                 'about_url': server.about_url
             }).strip()
 

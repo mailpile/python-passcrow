@@ -296,12 +296,12 @@ def cli_recover(args):
 
     Example:
         passcrow recover "Secret 1"
-        passcrow recover "Secret 1" A-123423 B-999888 C-333444
+        passcrow recover "Secret 1" 1123423 3999888 2333444
 
     Ephemeral example:
         passcrow recover passcrow.example.org:AbCd-1234-FfIi-Xyz0
-        passcrow recover AbCd-1234-FfIi-Xyz0 A-123123
-        passcrow recover AbCd-1234-FfIi-Xyz0 A-654321 B-123123 C-...
+        passcrow recover AbCd-1234-FfIi-Xyz0 1123123
+        passcrow recover AbCd-1234-FfIi-Xyz0 4654321 1123123 2...
 
     Options:
         -o <FILENAME> Write recovered data to file (default is stdout)
@@ -393,7 +393,7 @@ with the codes as arguments. For example:
 You must provide at least %d code(s) within %d minutes.""" % (
                     hint_list, url_list,
                     pack.name,
-                    ' '.join(['A-123456', 'B-321123'][:pack.min_shares]),
+                    ' '.join(['1234567', '2321123'][:pack.min_shares]),
                     pack.min_shares,
                     round(timeout/60)))
         return True

@@ -6,8 +6,8 @@
 #
 
 VERIFICATION_SUBJECT = {
-    'en': "%(desription)s Verification Code",
-    'is': "%(desription)s Staðfestingarkóði",
+    'en': "%(description)s Verification Code",
+    'is': "%(description)s Staðfestingarkóði",
     }
 
 
