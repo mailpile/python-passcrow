@@ -386,8 +386,13 @@ email_handler = EmailHandler(
 
 
 # Use a Twilio account to send SMS messages
-#sms_handler = passcrow.handlers.TwilioSmsHandler(
-#    api_key = '12341241234'),
+#
+#from passcrow.handlers.twilio import TwilioSmsHandler
+#
+#sms_handler = TwilioSmsHandler(
+#    from_number = '+1555123456',
+#    api_sid     = '1234',
+#    api_token   = '12341241234')
 
 
 handlers = {
