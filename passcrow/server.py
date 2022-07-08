@@ -300,14 +300,17 @@ class PasscrowServer:
     @classmethod
     def Init(cls, user, config_file, data_dir, force=False):
         import pwd
-        user_info = pwd.getpwnam(user)
+        if user not in ('', '-', None):
+            user_info = pwd.getpwnam(user)
+        else:
+            user_info = None
         if isinstance(data_dir, str):
             data_dir = bytes(data_dir, 'utf-8')
         if isinstance(config_file, str):
             config_file = bytes(config_file, 'utf-8')
 
         if not force:
-            if not user_info.pw_uid:
+            if user_info and not user_info.pw_uid:
                 raise ValueError('Passcrow server should not run as root')
             if config_file[-3:] not in (b'.py', '.py'):
                 raise ValueError('Config file name should end in .py')
@@ -322,7 +325,8 @@ class PasscrowServer:
             if dpath and not os.path.isdir(dpath):
                 os.mkdir(dpath, mode)
 
-        os.chown(data_dir, user_info.pw_uid, user_info.pw_gid)
+        if user_info:
+            os.chown(data_dir, user_info.pw_uid, user_info.pw_gid)
         with open(config_file, 'w') as fd:
             fd.write("""\
 ## Passcrow Server configuration
