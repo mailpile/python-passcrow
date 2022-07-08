@@ -20,6 +20,25 @@ This package includes the following things:
    3. A passcrow server implementation
 
 
+## Table of Contents (and Links)
+
+You are reading the instructions for people who want to use Passcrow!
+
+   * [Intended Audience](#intended-audience)
+   * [Getting Started - As a User](#gettng-started---as-a-user)
+   * [Getting Started - As a Python app Developer](#getting-started---as-a-python-app-developer)
+   * [Getting Started - As a Server Admin](#getting-started---as-a-server-admin)
+   * [Getting Started - As a Passcrow Developer](#getting-started---as-a-passcrow-developer)
+   * [Copyright and License](#copyright-and-license)
+
+See also:
+
+   * [Frequently Asked Questions](docs/FAQ.md)
+   * [Protocol documentation](docs/PROTOCOL.md)
+   * [Integration guide](docs/INTEGRATION.md) (for Python developers)
+   * [Community forum](https://community.mailpile.is/c/development/passcrow)
+
+
 ## Intended Audience
 
 This software is primarily a tool for developers of Open Source software
@@ -31,17 +50,6 @@ data. Want to add recovery options to your tool?
 A secondary audience, is technically sophisticted end users who want to
 directly add recovery options to local encryption tools such as GnuPG,
 a Bitcoin wallet, an encrypted hard drive, or their password manager.
-
-
-## Other Resources
-
-You are reading the instructions for people who just want to use Passcrow!
-See also:
-
-   * [Frequently Asked Questions](docs/FAQ.md)
-   * [Protocol documentation](docs/PROTOCOL.md)
-   * [Integration guide](docs/INTEGRATION.md) (for Python developers)
-   * [Community forum](https://community.mailpile.is/c/development/passcrow)
 
 
 ## Getting Started - As a User
@@ -58,7 +66,7 @@ See also:
 Now, use a text editor to customize the configuration file as recommended
 by `passcrow init`. Once this is done, you can start putting secrets in
 escrow:
-    
+
     $ passcrow protect -n "My secrets" /path/to/secrets.txt
 
     $ passcrow list
@@ -155,9 +163,26 @@ For further details, consult [the Passcrow Server Howto](docs/SERVER_HOWTO.md).
     # Test if it runs
     $ python3 -m passcrow help
 
-TODO:
+    # Add the -T flag to any commant, to use the internal mock server
+    $ python3 -m passcrow [command] -T ...
 
-   * Document some hacker hints
+
+### Running a test server via PageKite
+
+You will need an account with <https://pagekite.net/> for this to work.
+
+    ## Install upagekite, make it importable
+    $ git clone https://github.com/pagekite/upagekite
+    $ cd /path/to/passcrow
+    $ ln -s /path/to/upagekite/upagekite .
+
+    $ python3 -m server_init - /tmp/passcrow/server_config.py /tmp/passcrow
+    $ vi /tmp/passcrow/server_config.py
+    $ python3 -m passcrow.integration.upagekite_app \
+        KITE_NAME.pagekite.me KITE_SECRET /tmp/passcrow
+
+You can then configure your Passcrow client to use `KITE_NAME.pagekite.me`
+as a server.
 
 
 ## Copyright and License
