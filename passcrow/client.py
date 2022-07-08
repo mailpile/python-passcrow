@@ -687,11 +687,17 @@ class PasscrowClient:
                 failures.append(e)
         return (not failures)
 
+    def wanted_language(self):
+        # FIXME: How do we know which language the user wants?
+        #        This approach is useful for testing, but not much else.
+        return os.getenv('PASSCROW_LANGUAGE', 'en')
+
     def verify(self, pack, quick=False, now=None):
         ok, failures = True, []
         responses = {}
         def prep(prefix_esc, delay):
             vreq = VerificationRequest()
+            vreq.language = self.wanted_language()
             vreq.prefix, esc = prefix_esc
             vreq.escrow_data_id = _id = esc.response.escrow_data_id
             vreq.escrow_data_key = esc.recovery_key

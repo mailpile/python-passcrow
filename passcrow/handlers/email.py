@@ -42,6 +42,22 @@ def make_email_hint(email):
 
 
 class EmailHandler:
+    DEFAULT_OUTER_TEMPLATE = """\
+To: %(to)s
+From: %(from)s
+Subject: %(subject)s
+Date: %(date)s
+Message-Id: %(message_id)s
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+User-Agent: Passcrow Server <%(about_url)s>
+
+%(message)s
+
+-- 
+%(signature)s
+"""
+
     def __init__(self,
             smtp_server=None,
             smtp_login=None,
@@ -69,19 +85,29 @@ class EmailHandler:
         self.smtp_password = smtp_password
         self.sendmail_binary = sendmail_binary
         self.mail_from = mail_from
-        self.outer_template = outer_template or OUTER_EMAIL_TEMPLATE
+        self.outer_template = outer_template or self.DEFAULT_OUTER_TEMPLATE
 
-    def subject(self, server, description, vcode):
-        return VERIFICATION_SUBJECT % {
-            'description': description,
-            'vcode': vcode}
+    def subject(self, server, language, description, vcode):
+        fmt = VERIFICATION_SUBJECT.get(language)
+        return ((fmt or VERIFICATION_SUBJECT['en']) % {
+                'description': description,
+                'vcode': vcode
+            }).strip()
 
-    def body(self, server, description, vcode, tmo_seconds):
-        return VERIFICATION_BODY_LONG % {
-            'description': description,
-            'vcode': vcode,
-            'timeout_seconds': tmo_seconds,
-            'timeout_minutes': (tmo_seconds // 60)}
+    def body(self, server, language, description, vcode, tmo_seconds):
+        fmt = VERIFICATION_BODY_LONG.get(language)
+        return ((fmt or VERIFICATION_BODY_LONG) % {
+                'description': description,
+                'vcode': vcode,
+                'timeout_seconds': tmo_seconds,
+                'timeout_minutes': (tmo_seconds // 60)
+            }).strip()
+
+    def signature(self, server, language):
+        fmt = VERIFICATION_SIGNATURE.get(language)
+        return ((fmt or VERIFICATION_SIGNATURE['en']) % {
+                'about_url': server.about_url
+            }).strip()
 
     def _send_via_sendmail(self, server, email, message):
         message = bytes(message, 'utf-8')
@@ -133,15 +159,16 @@ class EmailHandler:
 
         raise IOError('Failed to send: %s' % err)
 
-    def send_code(self, server, mailto, description, vcode, timeout_seconds):
-        email = validate_email_identity(mailto).split(':', 1)[-1]
+    def send_code(self, server, lang, email, description, vcode, tmo_seconds):
+        email = validate_email_identity(email).split(':', 1)[-1]
         message = self.outer_template % {
             'to': email,
             'from': self.mail_from,
-            'subject': self.subject(server, description, vcode),
-            'message': self.body(server, description, vcode, timeout_seconds),
+            'subject': self.subject(server, lang, description, vcode),
+            'message': self.body(server, lang, description, vcode, tmo_seconds),
+            'signature': self.signature(server, lang),
             'about_url': server.about_url,
-            'message-id': make_msgid(),
+            'message_id': make_msgid(),
             'date': formatdate()}
 
         if self.sendmail_binary:
@@ -149,7 +176,7 @@ class EmailHandler:
         else:
             self._send_via_smtp(server, email, message)
 
-        return make_email_hint(mailto)
+        return make_email_hint(email)
 
 
 class MailtoHandler(EmailHandler):

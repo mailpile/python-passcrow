@@ -262,8 +262,8 @@ class PasscrowServer:
                 row_id=_id,
                 expiration=resp.expiration)
 
-            resp.hint = handler.send_code(
-                self, esd.verify, esd.description, vcode, tmo)
+            resp.hint = handler.send_code(self,
+                req.language or 'en', esd.verify, esd.description, vcode, tmo)
 
             return resp
         except KeyboardInterrupt:

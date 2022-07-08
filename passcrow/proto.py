@@ -199,15 +199,18 @@ class VerificationRequest(_json_object):
         "passcrow-verification-request": str,
         "escrow-data-id": str,
         "escrow-data-key": str,
+        "language": str,
         "prefix": str}
 
     passcrow_verification_request = property(*_json_object_prop('passcrow-verification-request'))
     escrow_data_id = property(*_json_object_prop('escrow-data-id'))
     escrow_data_key = property(*_json_object_prop('escrow-data-key'))
+    language = property(*_json_object_prop('language'))
     prefix = property(*_json_object_prop('prefix'))
 
     def _set_defaults(self):
         self.passcrow_verification_request = PASSCROW_PROTO_VERSION
+        self.language = 'en'
 
     def _check_self(self):
         if self.passcrow_verification_request not in PASSCROW_SUPPORTED_VERS:
