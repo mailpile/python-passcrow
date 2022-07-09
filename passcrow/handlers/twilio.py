@@ -29,11 +29,13 @@ class TwilioSmsHandler:
 
     def __init__(self,
             from_number=None,
+            from_service=None,
             api_sid=None,
             api_token=None,
             msg_fmts=None,
             api_sms_url=None):
         self.from_number = from_number
+        self.from_service = from_service
         self.api_token = api_token
         self.api_sid = api_sid
 
@@ -41,7 +43,6 @@ class TwilioSmsHandler:
         self.msg_fmts = msg_fmts or VERIFICATION_BODY_SHORT
 
         self.params = {
-            'from_number': from_number,
             'api_sid': api_sid,
             'api_token': api_token}
 
@@ -53,7 +54,6 @@ class TwilioSmsHandler:
         telnr = validate_tel_identity(tel).split(':', 1)[-1]
         post_url = self.api_sms_url % self.params
         post_data = {
-            'From': self.from_number,
             'To': telnr,
             'Body': (self.msg_fmts.get(lang, self.msg_fmts['en']) % {
                     'vcode': vcode,
@@ -61,6 +61,10 @@ class TwilioSmsHandler:
                     'timeout_seconds': tmo_seconds,
                     'timeout_minutes': (tmo_seconds // 60)}
                 ).strip()}
+        if self.from_number:
+            post_data['From'] = self.from_number
+        if self.from_service:
+            post_data['MessagingServiceSid'] = self.from_service
 
         post_data = bytes(urllib.parse.urlencode(post_data), 'us-ascii')
         headers = {
