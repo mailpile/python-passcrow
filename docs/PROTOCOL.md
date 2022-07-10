@@ -150,13 +150,14 @@ sequenceDiagram
     participant FooApp
     participant PServer1
     participant PServer2
-    Alice->>FooApp: Enable recovery IDs: +1555123456, alice@example.org
-    FooApp->>FooApp: Create Recovery Key and Fragments, and Escrow keys
+    Alice->>FooApp: Enable recovery with IDs +1555123456 and alice@example.org
+    FooApp->>FooApp: Create Recovery Key, Fragments, and Escrow Keys
     FooApp->>PServer1: Store encrypted Escrow Request 1
     PServer1->>FooApp: Done, the ID is 111
     FooApp->>PServer2: Store encrypted Escrow Request 2
     PServer2->>FooApp: Done, the ID is 222
-    FooApp->>FooApp: Create a Recovery Pack with server names, IDs and secret data.
+    FooApp->>FooApp: Create a Recovery Pack with server names, Escrow Keys, IDs and encrypted data.
+    FooApp->>FooApp: Forget Recovery Key and Fragments
     FooApp->>Alice: Success!
 ```
 
@@ -221,6 +222,11 @@ This process provides the following guarantees:
    parameters when generating key fragments and choosing identity
    verification strategies.
 
+4. Key generation and policy decisions are entirely client side, so
+   applications with specific needs have the option of implementing more
+   complicated policies than Shamir's "N-of-M", while still using the same
+   protocol and the same servers.
+
 The process also has the following characteristics, assuming the Passcrow
 Servers are well implemented and not malicious:
 
@@ -231,6 +237,12 @@ Servers are well implemented and not malicious:
 
 3. Communications between the application and Passcrow Servers can be
    anonymous and strongly encrypted, e.g. over HTTPS and/or Tor.
+
+4. No constraints are placed on *how* identities are verified by the
+   servers. In the simple case, an SMS or an e-mail may be sent with a
+   code, but it would also be possible to video-call a person or require
+   they log in to a website using OAuth, or pay $10 using a particular
+   PayPal account or a credit-card.
 
 
 **FIXME:** *Describe Ephemeral Passcrow. tl;dr: escrowing the Recovery Pack*
