@@ -126,9 +126,10 @@ popular "software as a service" systems.
    using Shamir's Secret Sharing algorithm, (at least) one Fragment for
    each identity the user intends to use for verification.
    
-2. Extra Fragments may be stored (cleartext) in the Recovery Pack itself
-   (see below), but never enough to reconstruct the Recovery Key on their
-   own.
+2. Since Shamir requires at least 3 fragments, but the user may only have
+   provied 1 or 2 identities, Extra Fragments may be stored (cleartext) in
+   the Recovery Pack itself (see below). Care is taken that these local
+   fragments are never enough to reconstruct the Recovery Key on their own.
 
 3. Each (identity, Fragment) pair is put in escrow with a Passcrow Server.
    Escrow Requests are themselves encrypted using randomly generated Escrow
