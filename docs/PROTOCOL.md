@@ -171,13 +171,16 @@ sequenceDiagram
 2. **Optional:** The Passcrow Servers may notify the user that recovery
    has been requested.
 
-3. The identification process results in the user receiving one or more
+3. **Optional:** One or more Passcrow Servers may ask the application to
+   direct the user to a web-page (a URL) to verify their identity.
+
+4. The identification process results in the user receiving one or more
    "Verification Codes", which they input into the passcrow-enabled
    application. Once the application has collected sufficient codes, it
    provides those to the Passcrow Servers and receives the Recovery Key
    Fragment(s) in return.
 
-4. This allows the application to reconstruct the Recovery Key and decrypt
+5. This allows the application to reconstruct the Recovery Key and decrypt
    the secret data in the Recovery Pack, thus granting access to locally
    encrypted data.
 
