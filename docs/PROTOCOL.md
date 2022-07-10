@@ -92,13 +92,16 @@ following user interactions for an app which wants to make use of it.
 ### Setup
 
    * The app requests permission to allow password resets/recovery
-      1. The user provides e-mail addresses and/or cell phone numbers
+      1. The user provides e-mail addresses, cell phone numbers or other
+         verifiable identifiers (credit card no, PayPal account, Twitter
+         handle ...).
       2. The user chooses a reset policy (require all, accept any, N of M)
 
 ### Recovery
 
    1. The user triggers a "password reset"
-      * The user is informed that codes have been sent via e-mail and/or SMS
+      * The user is informed that codes have been sent via e-mail, SMS, ...
+      * Or, the user is asked to visit a website and verify their identity
    2. The user inputs all recieved codes into the app
    3. The user chooses a new password
 
