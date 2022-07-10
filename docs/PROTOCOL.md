@@ -122,30 +122,52 @@ popular "software as a service" systems.
 
 ### Preparation
 
-1. A passcrow-enabled application creates a "Recovery Pack", which is
-   a (partially) encrypted file containing the application-specific data
-   required to regain access if a password is forgotten or a key lost,
-   along with settings, server names and IDs required to initiate recovery.
+1. A "Recovery Key", is randomly created and split into multiple Fragments
+   using Shamir's Secret Sharing algorithm, (at least) one Fragment for
+   each identity the user intends to use for verification.
+   
+2. Extra Fragments may be stored (cleartext) in the Recovery Pack itself
+   (see below), but never enough to reconstruct the Recovery Key on their
+   own.
 
-2. The "Recovery Key", a random key which was used to encrypt sensitive
-   parts of the Recovery Pack, is split into multiple Fragments using
-   Shamir's Secret Sharing algorithm.
+3. Each (identity, Fragment) pair is put in escrow with a Passcrow Server.
+   Escrow Requests are themselves encrypted using randomly generated Escrow
+   Keys which are also stored locally.
 
-3. Some Fragments may be stored (cleartext) along with the Recovery Pack
-   itself, but not enough to reconstruct the Recovery Key on their own.
+4. The passcrow-enabled application stores locally a "Recovery Pack", which 
+   contains all of the information needed to initiate recovery:
+   Recovery Data (encrypted using the Recovery Key), Extra Fragments (if any),
+   and for each Fragment, a Passcrow Server name, Escrow ID and Escrow Keys.
 
-4. Each of the other Fragments is put in escrow with a Passcrow Server,
-   along with instructions on how to verify the identity of the owner.
-   Escrow Requests are themselves partially encrypted to safeguard the
-   identity of the user.
+#### Illustrated example
+
+This sequence diagram illustrates the Preparation step for a hypthetical user
+Alice, who wants to use one phone number and one e-mail address for recovery:
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant FooApp
+    participant PServer1
+    participant PServer2
+    Alice->>FooApp: Enable recovery IDs: +1555123456, alice@example.org
+    FooApp->>FooApp: Create Recovery Key and Fragments, and Escrow keys
+    FooApp->>PServer1: Store encrypted Escrow Request 1
+    PServer1->>FooApp: Done, the ID is 111
+    FooApp->>PServer2: Store encrypted Escrow Request 2
+    PServer2->>FooApp: Done, the ID is 222
+    FooApp->>FooApp: Create a Recovery Pack with server names, IDs and secret data.
+    FooApp->>Alice: Success!
+```
 
 ### Recovery
 
-1. When recovery is initiated, the passcrow-enabled application instructs the
-   Passcrow Servers to decrypt the Escrow Requests and identify the user.
+1. When recovery is initiated, the passcrow-enabled application contacts
+   all Passcrow servers listed in the Recovery Pack, providing each with
+   the key required to decrypt the Escrow Request they have in storage.
 
-2. **Optional:** The Passcrow Servers notify the user that recovery has been
-   requested.
+2. **Optional:** The Passcrow Servers may notify the user that recovery
+   has been requested.
 
 3. The identification process results in the user receiving one or more
    "Verification Codes", which they input into the passcrow-enabled
@@ -154,14 +176,42 @@ popular "software as a service" systems.
    Fragment(s) in return.
 
 4. This allows the application to reconstruct the Recovery Key and decrypt
-   the Recovery Pack, thus granting access to locally encrypted data.
+   the secret data in the Recovery Pack, thus granting access to locally
+   encrypted data.
+
+#### Illustrated example, cont'd
+
+This sequence diagram illustrates the Recovery step, for the same hypthetical
+Alice as above:
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant FooApp
+    participant PServer1
+    participant PServer2
+    Alice->>FooApp: Please recover my stuff!
+    FooApp->>FooApp: Load IDs and Escrow Request keys from Recovery Pack
+    FooApp->>PServer1: Verify Escrow Request 111 with Escrow Key 1
+    FooApp->>PServer2: Verify Escrow Request 222 with Escrow Key 2
+    FooApp->>Alice: Please input 2 verification codes, once you receive them!
+    PServer1->>Alice: SMS to +1555123456, Verification code is 1234 
+    PServer2->>Alice: Email to alice@example.org, Verification code is 2468
+    Alice->>FooApp: My verification codes are 1234 and 2468
+    FooApp->>PServer1: Recover Escrow Request 111 with Escrow Key 1, code 1234
+    PServer1->>FooApp: Key Fragment 1
+    FooApp->>PServer2: Recover Escrow Request 222 with Escrow Key 2, code 2468
+    PServer2->>FooApp: Key Fragment 2
+    FooApp->>FooApp: Combine Key Fragments and decrypt Recovery Pack data
+    FooApp->>Alice: Your data is recovered!
+    FooApp->>Alice: Would you like to set a new password?
+```
 
 ### Notes
 
 This process provides the following guarantees:
 
-1. The user's encryption keys and data never leaves their device (except
-   for in the Ephemeral case).
+1. The user's encryption keys and data never leaves their device
 
 2. Users of the system remain anonymous and the Passcrow Servers have no
    access to user data (identities) until recovery is initiated.
