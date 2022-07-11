@@ -160,7 +160,7 @@ sequenceDiagram
     PServer1->>FooApp: Done, the ID is 111
     FooApp->>PServer2: Store encrypted Escrow Request 2
     PServer2->>FooApp: Done, the ID is 222
-    FooApp->>FooApp: Create a Recovery Pack with server names, Escrow Keys, IDs and encrypted data.
+    FooApp->>FooApp: Create Recovery Pack with server names, Escrow Keys, IDs and encrypted data
     FooApp->>FooApp: Forget Recovery Key and Fragments
     FooApp->>Alice: Success!
 ```
@@ -214,6 +214,29 @@ sequenceDiagram
     FooApp->>Alice: Your data is recovered!
     FooApp->>Alice: Would you like to set a new password?
 ```
+
+#### Illustrated example, URL-based verification
+
+If instead of an e-mail address, Alice had requested an OAuth-based verification
+(for example), the sequence after Alice is asked to "input 2 verification codes"
+changes like so:
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant FooApp
+    participant PServer1
+    participant PServer2
+    PServer2->>FooApp: Ask user to visit URL and log in
+    FooApp->>Alice: Please input 2 verification codes, once you receive them!
+    FooApp->>Alice: Please log in to URL, to receive one of the codes
+    PServer1->>Alice: SMS to +1555123456, Verification code is 1234 
+    Alice->>PServer2: Logging in to your URL, you can see I am Alice!
+    PServer2->>Alice: Your verification code is 2468
+    Alice->>FooApp: My verification codes are 1234 and 2468
+```
+
+... after which the sequence proceeds to recovery as before.
 
 ### Notes
 
