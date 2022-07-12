@@ -65,7 +65,7 @@ class Identity(str):
                 other = 'email:' + other
             # Check length first, to thwart regexp DOS attacks
             elif ((len(other) < 25)
-                    and re.match(r'^\+?(\d+[- ]?)+\d\d+$', other)):
+                    and re.match(r'^\+?(\d[- ]?)+\d\d$', other)):
                 other = 'tel:' + other
         if ':' not in other:
             raise ValueError('Invalid identity: %s' % other)
