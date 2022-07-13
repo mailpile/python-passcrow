@@ -25,7 +25,7 @@ This package includes the following things:
 You are reading the instructions for people who want to use Passcrow!
 
    * [Intended Audience](#intended-audience)
-   * [Getting Started - As a User](#gettng-started---as-a-user)
+   * [Getting Started - As a User](#getting-started---as-a-user)
    * [Getting Started - As a Python app Developer](#getting-started---as-a-python-app-developer)
    * [Getting Started - As a Server Admin](#getting-started---as-a-server-admin)
    * [Getting Started - As a Passcrow Developer](#getting-started---as-a-passcrow-developer)
