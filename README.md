@@ -176,7 +176,8 @@ You will need an account with <https://pagekite.net/> for this to work.
     $ cd /path/to/passcrow
     $ ln -s /path/to/upagekite/upagekite .
 
-    $ python3 -m server_init - /tmp/passcrow/server_config.py /tmp/passcrow
+    $ python3 -m passcrow server_init \
+        - /tmp/passcrow/server_config.py /tmp/passcrow
     $ vi /tmp/passcrow/server_config.py
     $ python3 -m passcrow.integration.upagekite_app \
         KITE_NAME.pagekite.me KITE_SECRET /tmp/passcrow

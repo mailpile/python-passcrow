@@ -49,7 +49,7 @@ def run_server(server, kite_name, kite_secret):
     # Programmatically configure our handlers instead of using decorators,
     # so the max_request_bytes matches our server configuration.
     url(*['/passcrow/%s' % m for m in server.endpoints])(
-        process_post(max_bytes=server.max_request_bytes)(
+        process_post(max_bytes=server.max_request_bytes, csrf=False)(
             passcrow_api))
 
     uPageKite([kite], socks=socks, uPK=uPK).run()
