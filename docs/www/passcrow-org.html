@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            background: #e6e8e3;
+            margin:40px auto;
+            max-width:650px;
+            line-height:1.6;
+            font-family: sans-serif;
+            font-size:17px;
+            color:#222;
+            padding:0 10px}
+
+        h1, h2, h3 {
+            margin: 10px 0 0px 0;
+            line-height: 1.2;
+            font-family: monospace; text-transform: lowercase; }
+        pre {border: 1px dashed #777; padding: 5px; margin: 5px;}
+        b { color: #544; font-weight: bold; }
+
+        .logo { position: relative; margin: 0 0 30px 0; padding: 0;}
+        .logo img { left: -130px; width: 100px; position: absolute; }
+        .logo h1, .logo h2 {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 56px;
+            margin: 0;}
+        .logo h1 { margin-top: 20px; }
+        .logo h2 { font-size: 15px; padding-left: 2px; }
+        .logo h2, .logo .org { color: #766; }
+        .logo .org { opacity: 0.85; }
+
+        ul.navbar {
+            z-index: 1;
+            left: 55%;
+            border: 1px dashed #766;
+            position: fixed;
+            display: block;
+            margin: 0;
+            padding: 0 5px 0 10px; 
+            list-style: none;
+            font-family: monospace; 
+            background: #e6e8e3;}
+        ul.navbar li { display: inline; margin: 0 0 0 -5px; padding: 0; }
+        ul.navbar li:after { content: "-"; padding: 0 0 0 5px; margin: 0; }
+        ul.navbar li:last-child:after { content: ""; }
+
+        b { font-weight: normal; }
+        div#cardwindow {
+            margin: 0; padding: 0;
+            display: block;
+            width: 600px;
+            overflow: scroll;}
+        div#cardstack {
+            margin: 0; padding: 0;
+            display: block;
+            width: 600px;}
+        div.card {
+            display: inline-block;
+            float: left;
+            width: 590px;
+            margin: 0;
+            padding: 0 10px 0 0;}
+        div.hidden { display: none; }
+    </style>
+    <script>
+        function slideScroll(elem, base, i) {
+            setTimeout(function() {
+                elem.scrollLeft = base + (i*10);
+            }, 10 + (i*3));
+        }
+
+        function scrollIntro(first) {
+            var cardwindow = document.getElementById('cardwindow');
+            var cardstack = document.getElementById('cardstack');
+            var cards = document.getElementsByClassName('card');
+            var card = (Math.floor(cardwindow.scrollLeft / 600) + 1) % cards.length
+            if (first) card = 0;
+
+            var stackwidth = (cards.length * 600);
+            cardstack.style.width = stackwidth + 'px';
+            cardstack.style.height = '300px';
+
+            if (!first && (cardwindow.scrollLeft % 600 == 0)) {
+                cards[card].style.display = 'inline-block';
+
+                if (cardwindow.scrollLeft >= (stackwidth - 650)) {
+                    cardwindow.scrollLeft = 0;
+                } else {
+                    for (var i = 1; i <= 60; i++) {
+                        slideScroll(cardwindow, cardwindow.scrollLeft, i);
+                    }
+                }
+            }
+            setTimeout(scrollIntro, cards[card].getAttribute('delay') * 1000);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply styling and hacks here for our carousel thingo.
+            // If Javascript is disabled, this stuff would be noise.
+            var cardwindow = document.getElementById('cardwindow');
+            var cardstack = document.getElementById('cardstack');
+            var bolds = document.getElementsByTagName('b');
+            var cards = document.getElementsByClassName('card');
+            var clone = cards[0].cloneNode(true);
+            clone.setAttribute('delay', 1);
+            cardwindow.scrollLeft = 0;
+            cardstack.appendChild(clone);
+            for (var i = 0; i < bolds.length; i++) {
+                 bolds[i].style.fontWeight = 'bold';
+            }
+            setTimeout(function() {scrollIntro(true);}, 1);
+        }, false);
+    </script>
+    <title>Passcrow: community-assisted, secure password recovery</title>
+</head><body>
+    <ul class='navbar'>
+        <li><a href="#intro">intro</a></li>
+        <li><a href="#servers">servers</a></li>
+        <li><a href="https://community.mailpile.is/c/development/passcrow">forum</a></li>
+        <li><a href="https://github.com/mailpile/python-passcrow/blob/main/docs/FAQ.md#frequently-asked-questions-about-passcrow">FAQ</a></li>
+        <li><a href="https://github.com/mailpile/python-passcrow/">code</a></li>
+    </ul>
+    <a name='intro'></a><div class='logo'>
+        <img src='passcrow-keyfeet.png'>
+        <h1>Passcrow<span class='org'>.org</span></h1>
+        <h2>Community-assisted, secure password recovery</h2>
+    </div>
+
+    <h2>Intro</h2>
+    <div id='cardwindow'><div id='cardstack'>
+        <div class='card' delay=16>
+            <p>Passcrow brings <b>password reset</b> functionality to
+               <b>strong encryption</b>, without giving sensitive data to
+               third parties.</p>
+            <p>Your sensitive, encrypted data stays on your devices, but
+               fragments of a recovery key are placed in escrow with
+               <b>community-run servers</b>, which only release the fragments
+               once you have proven your identity.</p>
+        </div>
+
+        <div class='card' delay=16>
+            <p><b>Passcrow works like this:</b></p>
+            <ol>
+                <li>Recovery is requested</li>
+                <li>The user receives one or more <b>verification codes</b>
+                    (e-mail, SMS, ...)</li>
+                <li>The <b>codes are copied</b> into the application</li>
+                <li>Access is granted and the user <b>chooses a new
+                    password</b></li>
+            </ol>
+            <p>This is intentionally similar to the password resets of
+               mainstream cloud accounts. Familiarity is a feature!</p>
+        </div>
+
+        <div class='card' delay=18>
+            <p>Behind the scenes, Passcrow uses
+               <a href="https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing"
+               ><b>Shamir's Secret Sharing</b></a> and AES encryption to
+               safeguard user data and privacy.</p>
+            <p>Servers store recovery key fragments, releasing them only when
+               you have verified your identity. The fragments and identities
+               are <b>strongly encrypted</b> and the keys required to decrypt
+               and initiate recovery live on your device.</p>
+            <p>Until you request recovery, you are <b>completely
+               anonymous</b>.</p>
+        </div>
+
+        <div class='card' delay=17>
+            <p>Passcrow is primarily a tool for developers of encryption
+               software, who are in need of methods to safely regain
+               access when keys or <b>passwords get lost</b>.</p>
+            <p>Want to add recovery options to your project?
+               <a href="https://github.com/mailpile/python-passcrow/blob/main/docs/INTEGRATION.md"
+               ><b>Passcrow can help!</b></a><p>
+            <p>Technically savvy people who want to manage recovery themselves,
+               are of course <a href="https://github.com/mailpile/python-passcrow#getting-started---as-a-user"
+               >encouraged to do so as well</a>!</p>
+        </div>
+
+        <div class='card' delay=17>
+            <p>Anyone can <a href="https://github.com/mailpile/python-passcrow/blob/main/docs/SERVER_HOWTO.md#passcrow-server---howto"
+               >run a Passcrow server</a>, but doing so for the general public
+               implies a commitment to <b>keeping the server online</b> for a
+               long time: years or even decades.</p>
+            <p>Currently, <b><a href="https://www.mailpile.is/">Mailpile</a> is
+               committed</b> to running one such server, but it would be great
+               if more organizations took part.<p>
+            <p>Please <a href="https://community.mailpile.is/c/development/passcrow"
+               ><b>get in touch</b></a> if you have ideas!</p>
+        </div>
+
+        <div class='card' delay=16>
+            <p>Passcrow is a <b>Free and Open Source</b> project, made
+               possible by volunteers and donations from the
+               <a href="https://www.mailpile.is/">Mailpile</a> community.</p>
+            <p>You can examine
+               <a href="https://github.com/mailpile/python-passcrow/">the
+               code and technical documentation</a> on Github.</b>
+            <p><a href="https://community.mailpile.is/c/development/passcrow"
+               >Maybe you can also help out</a>? That would be nice.</p>
+        </div>
+
+    </div></div>
+
+    <a name='servers'></a><h2>Community Servers</h2>
+
+    
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    
+    <script></script>
+</body></html>
