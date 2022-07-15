@@ -47,11 +47,13 @@ class ServerStats(_json_object):
         'version': str,
         'start-ts': int,
         'requests': dict,
-        'storage': dict}
+        'storage': dict,
+        'handlers': list}
     version = property(*_json_object_prop('version'))
     start_ts = property(*_json_object_prop('start-ts'))
     requests = property(*_json_object_prop('requests'))
     storage = property(*_json_object_prop('storage'))
+    handlers = property(*_json_object_prop('handlers'))
 
 
 class PasscrowServer:
@@ -155,6 +157,7 @@ class PasscrowServer:
 
     def generate_Stats(self, request_dict):
         self.server_stats.storage = self.storage.get_stats()
+        self.server_stats.handlers = list(self.handlers.keys())
         return self.server_stats
 
     def generate_Policy(self, request_dict):
