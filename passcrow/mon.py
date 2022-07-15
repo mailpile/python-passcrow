@@ -9,6 +9,7 @@ Usage:
 Operations:
 
     Stats <servernames>    Update our local mirror of the server stats
+    Auto  <op> <op-args>   Peform an op for all servers in servers.json
 
     ETest <servername> <ttl> <email>
     RTest <servername> <ttl> <imap-server> <username> <password>
@@ -185,6 +186,31 @@ def op_etest(workdir, args):
         _save_server_stats(workdir, server_stats)
 
 
+def _run(ops, workdir, args):
+    op = ops.get(args.pop(0).lower())
+    if not op:
+        _bail_out('Unknown operation: %s' % op)
+    return op(workdir, args)
+
+
+def op_auto(workdir, args):
+    try:
+        with open(os.path.join(workdir, 'servers.json'), 'rb') as fd:
+            servers = json.load(fd)
+    except Exception as e:
+        _bail_out('Failed to load servers.json: %s' % e)
+
+    ok = True
+    ops = {
+        'stats': op_stats,
+        'etest': op_etest}
+    for server in servers:
+        op_args = args[:1] + [server] + args[1:]
+        ok = _run(ops, workdir, op_args) and ok
+
+    return ok
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
     if len(args) < 2:
@@ -194,13 +220,11 @@ if __name__ == '__main__':
     if not os.path.isdir(workdir):
         _bail_out('Not a directory %s' % workdir)
 
-    op = {
+    ops = {
+        'auto': op_auto,
         'stats': op_stats,
-        'etest': op_etest,
-        }.get(args.pop(0).lower())
-    if not op:
-        _bail_out('Unknown operation: %s' % op)
+        'etest': op_etest}
     try:
-        sys.exit(0 if op(workdir, args) else 2)
+        sys.exit(0 if _run(ops, workdir, args) else 2)
     except Exception as e:
         _bail_out(e)
