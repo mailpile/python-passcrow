@@ -1,4 +1,16 @@
 {
-    "passcrow.mailpile.is": {},
-    "passcrow-test.mailpile.is": {}
+    "passcrow.mailpile.is": {
+        "about_url": "https://passcrow.mailpile.is/",
+        "organization": "Mailpile ehf",
+        "contact": "Bjarni R. Einarsson <bre@mailpile.is>",
+        "country": "IS"
+    },
+    "passcrow-test.mailpile.is": {
+        "about_url": "https://passcrow-test.mailpile.is/",
+        "organization": "Mailpile ehf",
+        "contact": "Bjarni R. Einarsson <bre@mailpile.is>",
+        "country": "IS",
+        "notes": "Testing only! All escrowed data is deleted after 30 days",
+        "testing": true
+    }
 }

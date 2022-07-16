@@ -39,9 +39,9 @@
             position: fixed;
             display: block;
             margin: 0;
-            padding: 0 5px 0 10px; 
+            padding: 0 5px 0 10px;
             list-style: none;
-            font-family: monospace; 
+            font-family: monospace;
             background: #e6e8e3;}
         ul.navbar li { display: inline; margin: 0 0 0 -5px; padding: 0; }
         ul.navbar li:after { content: "-"; padding: 0 0 0 5px; margin: 0; }
@@ -64,6 +64,23 @@
             margin: 0;
             padding: 0 10px 0 0;}
         div.hidden { display: none; }
+
+        table#servertable,
+        table#servertable tr,
+        table#servertable td,
+        table#servertable th { border: 1px solid #b8b9b5; }
+        table#servertable {
+            width: 750px;
+            margin: 25px -50px; }
+        table#servertable th,
+        table#servertable td {
+            padding: 2px 7px;
+            white-space: nowrap;
+            text-align: center; }
+        table#servertable td.notes { text-align: left; white-space: normal; font-size: smaller; }
+        table#servertable td.server { font-family: monospace; font-size: smaller; }
+        table#servertable th.tests,
+        table#servertable tr.tests { color: #777; }
     </style>
     <script>
         function slideScroll(elem, base, i) {
@@ -71,7 +88,6 @@
                 elem.scrollLeft = base + (i*10);
             }, 10 + (i*3));
         }
-
         function scrollIntro(first) {
             var cardwindow = document.getElementById('cardwindow');
             var cardstack = document.getElementById('cardstack');
@@ -96,7 +112,7 @@
             }
             setTimeout(scrollIntro, cards[card].getAttribute('delay') * 1000);
         }
-        document.addEventListener('DOMContentLoaded', function() {
+        function scrollSetup() {
             // Apply styling and hacks here for our carousel thingo.
             // If Javascript is disabled, this stuff would be noise.
             var cardwindow = document.getElementById('cardwindow');
@@ -111,6 +127,44 @@
                  bolds[i].style.fontWeight = 'bold';
             }
             setTimeout(function() {scrollIntro(true);}, 1);
+        }
+
+        function ud(t) {
+            return Math.round(t / (24*360)) / 10;
+        }
+        function displayServers(servers) {
+            var servertable = document.getElementById('servertable');
+            for (var server in servers) {
+                var s = servers[server];
+                if (s.metrics && s.policy) {
+                    html = (
+                       "<tr>"
+                     +  "<td class=org title=\"contact: " +s.contact+ "\" rowspan=2>"
+                     +   "<a href=\"" + s.about_url + "\">" +s.organization+ "</a>"
+                     +  "</td>"
+                     +  "<td class=geo rowspan=2>" +s.country+ "</td>"
+                     +  "<td class=notes rowspan=2>" +(s.notes ? s.notes : '')+ "</td>"
+                     +  "<td class=server colspan=7>" +s.policy+ "</td>"
+                     + "</tr><tr class=tests>"
+                     +  "<td>"+ud(s.metrics.uptime_s_avg)+"</td>"
+                     +  "<td>"+ud(s.metrics.uptime_s_m50)+"</td>"
+                     +  "<td>"+ud(s.metrics.uptime_s_m90)+"</td>"
+                     +  "<td>-</td><td>-</td><td>-</td><td>-</td>"
+                     + "</tr>");
+                    servertable.innerHTML += html;
+                }
+            }
+            document.getElementById('servertableloading').remove();
+        }
+        function loadServers() {
+            fetch('stats/server-summary.json')
+                .then(response => { return response.json(); })
+                .then(jsondata => { displayServers(jsondata); })
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollSetup();
+            loadServers();
         }, false);
     </script>
     <title>Passcrow: community-assisted, secure password recovery</title>
@@ -205,13 +259,37 @@
     </div></div>
 
     <a name='servers'></a><h2>Community Servers</h2>
+    <p>
+        The following table lists the known public Passcrow servers. These
+        servers are automatically monitored by <b>passcrow.org</b> to track
+        availability and whether escrow/recovery requests succeed or not.
+    </p>
+    <table border=1 cellspacing=0 cellpadding=0 id="servertable">
+        <colgroup>
+        </colgroup>
+        <tr>
+             <th rowspan=2>Admin</th>
+             <th rowspan=2 colspan=2>Country, notes</th>
+             <th colspan=3>Uptime (days)</th>
+             <th colspan=4>Escrow Tests</th>
+        </tr>
+        <tr class=tests>
+             <th>avg</th><th>50%</th><th>90%</th>
+             <th>7D</th><th>30D</th><th>1Y</th><th>10Y</th>
+        </tr>
+        <tr id=servertableloading>
+             <td colspan=9><i>Loading ...</i></td>
+        </tr>
+    </table>
+    <p>
+        This data is also available in <a href="stats/server-summary.json"
+        >machine-readable format (JSON)</a>.
+    </p>
+    <p>
+        To add your server to the list, open a pull request against
+        <a href="https://github.com/mailpile/python-passcrow/blob/main/docs/www/passcrow-org-servers.json"
+        >the master JSON file</a>.
+    </p>
 
-    
-
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    
     <script></script>
 </body></html>

@@ -8,8 +8,9 @@ Usage:
 
 Operations:
 
-    Stats <servernames>    Update our local mirror of the server stats
     Auto  <op> <op-args>   Peform an op for all servers in servers.json
+    Stats <servernames>    Update our local mirror of the server stats
+    Summarize              Outputs a JSON summary of server states
 
     ETest <servername> <ttl> <email>
     RTest <servername> <ttl> <imap-server> <username> <password>
@@ -42,6 +43,14 @@ from .client import PasscrowRecoveryPolicy, PasscrowClient
 
 
 MAX_SERVER_STATS_BYTES = 10240    # We don't want to process infinite data
+
+
+def _load_server_list(workdir):
+    try:
+        with open(os.path.join(workdir, 'servers.json'), 'rb') as fd:
+            return json.load(fd)
+    except Exception as e:
+        _bail_out('Failed to load servers.json: %s' % e)
 
 
 def _load_server_stats(workdir, server):
@@ -195,12 +204,7 @@ def _run(ops, workdir, args):
 
 
 def op_auto(workdir, args):
-    try:
-        with open(os.path.join(workdir, 'servers.json'), 'rb') as fd:
-            servers = json.load(fd)
-    except Exception as e:
-        _bail_out('Failed to load servers.json: %s' % e)
-
+    servers = _load_server_list(workdir)
     ops = {
         'stats': op_stats,
         'etest': op_etest}
@@ -220,6 +224,46 @@ def op_auto(workdir, args):
     return False if (False in res) else True
 
 
+def op_summarize(workdir, args):
+    if args:
+        _bail_out('Summarize takes no arguments')
+    servers = _load_server_list(workdir)
+    for server in servers:
+        try:
+            server_stats = _load_server_stats(workdir, server)
+            if not server_stats.get('stats', {}).get('handlers'):
+                continue
+            server_history = server_stats['history']
+
+            uptime_days = time.time() - server_stats['stats']['start-ts']
+            uptime_days = uptime_days // (24*36)
+            uptime_days /= 100
+
+            handlers = server_stats['stats']['handlers']
+            if 'mailto' in handlers:
+                handlers.remove('mailto')
+            policy_line = '%s via %s' % (', '.join(sorted(handlers)), server)
+
+            servers[server].update({
+                'policy': policy_line,
+                'version': server_stats['stats'].get('version', 'unknown'),
+                'storage': server_stats['stats'].get('storage', {
+                     'type': 'unknown',
+                     'encrypted': False}),
+                'handlers': handlers,
+                'metrics': {'uptime_days': uptime_days}})
+            for hist in (
+                    'uptime_s_avg', 'uptime_s_m50', 'uptime_s_m90',
+                    'stats_ms_avg', 'stats_ms_m50', 'stats_ms_m90'):
+                if hist in server_history:
+                    servers[server]['metrics'][hist] = server_history[hist]
+        except:
+            traceback.print_exc()
+            pass
+ 
+    print(json.dumps(servers, indent=2))
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
     if len(args) < 2:
@@ -231,6 +275,7 @@ if __name__ == '__main__':
 
     ops = {
         'auto': op_auto,
+        'summarize': op_summarize,
         'stats': op_stats,
         'etest': op_etest}
     try:
