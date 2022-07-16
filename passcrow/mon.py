@@ -8,9 +8,9 @@ Usage:
 
 Operations:
 
-    Auto  <op> <op-args>   Peform an op for all servers in servers.json
-    Stats <servernames>    Update our local mirror of the server stats
-    Summarize              Outputs a JSON summary of server states
+    Auto  <op> <op-args>    Peform an op for all servers in servers.json
+    Stats <servernames>     Update our local mirror of the server stats
+    Summarize [<outfile>]   Outputs a JSON summary of server states
 
     ETest <servername> <ttl> <email>
     RTest <servername> <ttl> <imap-server> <username> <password>
@@ -225,8 +225,7 @@ def op_auto(workdir, args):
 
 
 def op_summarize(workdir, args):
-    if args:
-        _bail_out('Summarize takes no arguments')
+    target = args.pop(0) if args else '-'
     servers = _load_server_list(workdir)
     for server in servers:
         try:
@@ -261,7 +260,12 @@ def op_summarize(workdir, args):
             traceback.print_exc()
             pass
  
-    print(json.dumps(servers, indent=2))
+    if target == '-':
+        print(json.dumps(servers, indent=2))
+    else:
+        with open(target, 'w') as fd:
+            fd.write(json.dumps(servers, indent=2))
+    return True
 
 
 if __name__ == '__main__':
