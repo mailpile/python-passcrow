@@ -28,6 +28,7 @@ given IMAP account's inbox for verification requests.
 import json
 import os
 import random
+import threading
 import time
 import traceback
 import sys
@@ -200,15 +201,23 @@ def op_auto(workdir, args):
     except Exception as e:
         _bail_out('Failed to load servers.json: %s' % e)
 
-    ok = True
     ops = {
         'stats': op_stats,
         'etest': op_etest}
+
+    res = []
+    def runner(op_args):
+        res.append(_run(ops, workdir, op_args))
+
+    jobs = []
     for server in servers:
         op_args = args[:1] + [server] + args[1:]
-        ok = _run(ops, workdir, op_args) and ok
+        jobs.append(threading.Thread(target=runner, args=(op_args,)))
+        jobs[-1].start()
+    for job in jobs:
+        job.join()
 
-    return ok
+    return False if (False in res) else True
 
 
 if __name__ == '__main__':
