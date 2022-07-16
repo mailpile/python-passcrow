@@ -230,7 +230,7 @@ def op_summarize(workdir, args):
     for server in servers:
         try:
             server_stats = _load_server_stats(workdir, server)
-            if not server_stats.get('stats', {}).get('handlers'):
+            if not server_stats.get('stats', None):
                 continue
             server_history = server_stats['history']
 
@@ -238,7 +238,7 @@ def op_summarize(workdir, args):
             uptime_days = uptime_days // (24*36)
             uptime_days /= 100
 
-            handlers = server_stats['stats']['handlers']
+            handlers = server_stats['stats'].get('handlers', ['email'])
             if 'mailto' in handlers:
                 handlers.remove('mailto')
             policy_line = '%s via %s' % (', '.join(sorted(handlers)), server)
