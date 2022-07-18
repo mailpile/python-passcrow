@@ -89,8 +89,8 @@ To learn more about passcrow commands, options and arguments:
 
     $ pip3 install passcrow
 
-For now, in liu of docs, check out `passcrow/__main__.py` for a complete
-implementation of the features provided by this library.
+For guidance on how to integrate Passcrow into your app, consult the
+[Integration guide](docs/INTEGRATION.md).
 
 If you also want to run your own private passcrow server for testing, the
 quickest method is to register for an account with <https://pagekite.net/>
@@ -105,9 +105,6 @@ and use the Pagekite integration to expose a test server:
 You can verify it is up and running like so:
 
     $ curl https://KITE_NAME/passcrow/policy
-
-For guidance on how to integrate Passcrow into your app, consulte the
-[Integration guide](docs/INTEGRATION.md).
 
 
 ## Getting Started - As a Server Admin
