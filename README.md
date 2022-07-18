@@ -1,6 +1,6 @@
 # Python Passcrow
 
-**WARNING:** This is very new, proof-of-concept code. Anything might change!
+**WARNING:** Passcrow is new and still developing. Anything might change!
 
 Passcrow is a system for community-assisted secure “password escrow”,
 making it possible to recover from forgetting or losing a key, password or
@@ -9,9 +9,6 @@ passphrase.
 The user experience strives to be similar to the "reset password" recovery
 flow of popular online services, but adapted to the needs of Open Source,
 decentralization and users keeping locally encrypted data.
-
-This is a stand-alone proof-of-concept Python implementation of Mailpile's
-[passcrow protocol](docs/PROTOCOL.md).
 
 This package includes the following things:
 
