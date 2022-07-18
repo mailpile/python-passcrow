@@ -75,13 +75,12 @@ Bug reports regarding the Python code or this documentation should go here:
 
 ## What is passcrow.org ?
 
-**Note:** *this answer is aspirational, work is in progress*
-
-[Passcrow.org](https://passcrow.org/) publishes a directory of public
+[Passcrow.org](https://passcrow.org/) gives a quick introduction to
+what Passcrow is, but its main role is to publish a directory of public
 Passcrow servers, both in human-readable and machine-readable form.
 
-Passcrow.org will also take care of periodically testing the public servers
-to verify they are functioning correctly, and publishing the results of
+Passcrow.org takes care of periodically testing the public servers to
+verify they are functioning correctly, and publishing the results of
 these tests so users can be informed if a server goes offline.
 
 
